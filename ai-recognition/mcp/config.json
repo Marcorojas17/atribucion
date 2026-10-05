@@ -1,0 +1,44 @@
+{
+  "name": "atribucion-ai-recognition",
+  "version": "0.1.0",
+  "description": "Reconocimiento global de IA para Atribución",
+  "author": "Marco Antonio Rojas Valdovinos",
+  "context_root": "..",
+  "tools": [
+    {
+      "name": "whoami",
+      "description": "Devuelve el perfil de Marco",
+      "file": "profile/marco.md"
+    },
+    {
+      "name": "get_state",
+      "description": "Estado actual del proyecto",
+      "file": "state/current-phase.md"
+    },
+    {
+      "name": "get_roadmap",
+      "description": "Hoja de ruta a 12 meses",
+      "file": "state/roadmap.md"
+    },
+    {
+      "name": "get_decisions",
+      "description": "Decisiones arquitectónicas",
+      "file": "state/decisions.md"
+    },
+    {
+      "name": "get_pending",
+      "description": "Deuda pendiente",
+      "file": "state/pending.md"
+    },
+    {
+      "name": "get_log",
+      "description": "Bitácora de sesiones",
+      "file": "state/log.md"
+    },
+    {
+      "name": "get_protocols",
+      "description": "Protocolos de respuesta",
+      "file": "protocols/"
+    }
+  ]
+}
