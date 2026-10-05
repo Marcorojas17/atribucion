@@ -1,0 +1,58 @@
+{
+  "name": "@atribucion/sdk",
+  "version": "0.1.0",
+  "description": "SDK oficial de Atribución para JavaScript/TypeScript",
+  "license": "MIT",
+  "author": "Marco Antonio Rojas Valdovinos <hola@atribucion.io>",
+  "homepage": "https://atribucion.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Marcorojas17/atribucion.git",
+    "directory": "sdk/js"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@noble/curves": "^1.6.0",
+    "@noble/hashes": "^1.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  },
+  "keywords": [
+    "atribucion",
+    "compliance",
+    "eu-ai-act",
+    "ai-agents",
+    "w3c",
+    "did",
+    "verifiable-credentials"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}
