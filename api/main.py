@@ -2,9 +2,12 @@
 Atribución — Servidor FastAPI.
 
 Punto de entrada del API. Monta los routers, aplica middleware
-y expone el endpoint del producto:
+y expone los endpoints del producto:
 
-    POST /v1/agents/{agent_id}/actions
+    POST /v1/agents                      → registrar agente
+    POST /v1/agents/{agent_id}/actions   → registrar acción
+    GET  /v1/proofs/{certificate_id}     → verificar certificado
+    GET  /v1/health                      → healthcheck
 
 Arrancar en local:
     uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
@@ -23,7 +26,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from api import __version__
-from api.routes import actions_router
+from api.routes.actions import router as actions_router
+from api.routes.agents import router as agents_router
+from api.routes.proofs import router as proofs_router
 
 
 # ─────────────────────────────────────────────────────────────
@@ -36,19 +41,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     Ciclo de vida del servidor.
 
     Startup:
-        - Conectar DB
-        - Inicializar cache
         - Verificar conexión a Ethereum (si hay wallet)
+        - Inicializar cache
 
     Shutdown:
         - Cerrar conexiones limpiamente
     """
-    # Startup
     print(f"🚀 Atribución API v{__version__} arrancando...")
-
     yield
-
-    # Shutdown
     print("👋 Atribución API cerrando...")
 
 
@@ -68,6 +68,15 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
+    contact={
+        "name": "Marco Antonio Rojas Valdovinos",
+        "email": "hola@atribucion.io",
+        "url": "https://atribucion.io",
+    },
+    license_info={
+        "name": "MIT OR Apache-2.0",
+        "url": "https://github.com/Marcorojas17/atribucion",
+    },
 )
 
 
@@ -75,10 +84,9 @@ app = FastAPI(
 # MIDDLEWARE
 # ─────────────────────────────────────────────────────────────
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción: dominios específicos
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -120,6 +128,8 @@ async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse
 # ─────────────────────────────────────────────────────────────
 
 app.include_router(actions_router)
+app.include_router(agents_router)
+app.include_router(proofs_router)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -127,14 +137,19 @@ app.include_router(actions_router)
 # ─────────────────────────────────────────────────────────────
 
 @app.get("/", tags=["system"], summary="Información del API")
-async def root() -> dict[str, str]:
-    """Raíz del API. Devuelve información básica."""
+async def root() -> dict:
+    """Raíz del API. Devuelve información y lista de endpoints."""
     return {
         "service": "atribucion",
         "version": __version__,
         "description": "Compliance EU AI Act para agentes IA",
-        "docs": "/docs",
-        "health": "/v1/health",
+        "endpoints": {
+            "register_agent": "POST /v1/agents",
+            "record_action": "POST /v1/agents/{agent_id}/actions",
+            "verify_certificate": "GET /v1/proofs/{certificate_id}",
+            "health": "GET /v1/health",
+            "docs": "GET /docs",
+        },
         "repository": "https://github.com/Marcorojas17/atribucion",
     }
 
