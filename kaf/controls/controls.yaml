@@ -1,0 +1,282 @@
+# ─────────────────────────────────────────────────────────────
+# KAF — Controles canónicos
+# ─────────────────────────────────────────────────────────────
+# 47 controles organizados en 12 dominios.
+# Cada control mapea a estándares internacionales y se audita
+# automáticamente vía API.
+
+version: "1.0.0"
+
+domains:
+  - id: 1
+    name: identidad
+    controls:
+      - id: KAF-1.1
+        name: DID registrado
+        description: Cada agente tiene un DID bajo el método kronos.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-1.2
+        name: VC vigente
+        description: Cada agente tiene una Credencial Verificable activa.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-1.3
+        name: Claves rotadas
+        description: Claves rotadas en los últimos 90 días.
+        severity: high
+        auto_auditable: true
+      - id: KAF-1.4
+        name: DID Document público
+        description: DID Document accesible y verificable.
+        severity: medium
+        auto_auditable: true
+
+  - id: 2
+    name: atribucion
+    controls:
+      - id: KAF-2.1
+        name: Contrato firmado
+        description: Contrato de Atribución firmado por agente, creador y operador.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-2.2
+        name: Colateral depositado
+        description: Colateral en escrow según nivel de autonomía.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-2.3
+        name: Nivel de autonomía declarado
+        description: Nivel declarado y respetado (supervisado/semi/autónomo).
+        severity: high
+        auto_auditable: true
+      - id: KAF-2.4
+        name: Límite de daño configurado
+        description: Límite de daño máximo en KRN definido.
+        severity: high
+        auto_auditable: true
+
+  - id: 3
+    name: trazabilidad
+    controls:
+      - id: KAF-3.1
+        name: Log inmutable
+        description: Cada acción registrada en log append-only.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-3.2
+        name: Firma por acción
+        description: Cada acción firmada con clave del agente.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-3.3
+        name: Anclaje Ethereum
+        description: Merkle root anclado a Ethereum cada ≤6h.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-3.4
+        name: Hash doble
+        description: SHA-256 + SHA-3 en cada payload.
+        severity: high
+        auto_auditable: true
+      - id: KAF-3.5
+        name: IPFS archival
+        description: Contenido archivado en IPFS + Arweave.
+        severity: medium
+        auto_auditable: true
+
+  - id: 4
+    name: supervision
+    controls:
+      - id: KAF-4.1
+        name: Aprobación humana documentada
+        description: Acciones supervisadas con human_approval firmado.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-4.2
+        name: Alertas automáticas
+        description: Alertas por acciones críticas.
+        severity: high
+        auto_auditable: true
+      - id: KAF-4.3
+        name: Kill switch
+        description: Mecanismo de interrupción inmediata.
+        severity: high
+        auto_auditable: false
+
+  - id: 5
+    name: explicabilidad
+    controls:
+      - id: KAF-5.1
+        name: Reasoning documentado
+        description: Acciones autónomas incluyen reasoning.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-5.2
+        name: Explicación verificable
+        description: Razonamiento hasheado y anclado.
+        severity: high
+        auto_auditable: true
+      - id: KAF-5.3
+        name: Derecho a explicación
+        description: Endpoint público para obtener explicación.
+        severity: medium
+        auto_auditable: true
+
+  - id: 6
+    name: seguridad
+    controls:
+      - id: KAF-6.1
+        name: ISO 27001
+        description: Certificación ISO 27001 vigente.
+        severity: critical
+        auto_auditable: false
+      - id: KAF-6.2
+        name: SOC 2 Type II
+        description: Auditoría SOC 2 vigente (últimos 12 meses).
+        severity: high
+        auto_auditable: false
+      - id: KAF-6.3
+        name: Pentesting anual
+        description: Auditoría de penetración en el último año.
+        severity: high
+        auto_auditable: false
+      - id: KAF-6.4
+        name: HSM para claves
+        description: Claves privadas en Hardware Security Module.
+        severity: critical
+        auto_auditable: false
+      - id: KAF-6.5
+        name: Zero Trust
+        description: Verificación en cada request.
+        severity: high
+        auto_auditable: true
+
+  - id: 7
+    name: privacidad
+    controls:
+      - id: KAF-7.1
+        name: GDPR compliance
+        description: Cumplimiento GDPR documentado.
+        severity: critical
+        auto_auditable: false
+      - id: KAF-7.2
+        name: LFPDPPP compliance
+        description: Cumplimiento LFPDPPP (México).
+        severity: high
+        auto_auditable: false
+      - id: KAF-7.3
+        name: Datos personales fuera de cadena
+        description: Datos personales nunca anclados a blockchain.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-7.4
+        name: Cifrado en reposo
+        description: AES-256-GCM para datos sensibles.
+        severity: high
+        auto_auditable: true
+
+  - id: 8
+    name: continuidad
+    controls:
+      - id: KAF-8.1
+        name: Backups diarios
+        description: Backups automáticos con retención ≥30 días.
+        severity: high
+        auto_auditable: true
+      - id: KAF-8.2
+        name: Disaster recovery plan
+        description: Plan DR documentado y probado.
+        severity: high
+        auto_auditable: false
+      - id: KAF-8.3
+        name: SLA cumplido
+        description: Uptime ≥99.5% en los últimos 30 días.
+        severity: medium
+        auto_auditable: true
+
+  - id: 9
+    name: criptografia
+    controls:
+      - id: KAF-9.1
+        name: Firmas híbridas
+        description: ECDSA + ML-DSA en cada firma.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-9.2
+        name: Preparación post-cuántica
+        description: Algoritmos NIST PQC implementados.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-9.3
+        name: Rotación de claves
+        description: Rotación automática cada ≤90 días.
+        severity: high
+        auto_auditable: true
+      - id: KAF-9.4
+        name: TLS 1.3
+        description: TLS 1.3 obligatorio en todas las conexiones.
+        severity: high
+        auto_auditable: true
+
+  - id: 10
+    name: pagos
+    controls:
+      - id: KAF-10.1
+        name: PCI DSS
+        description: Cumplimiento PCI DSS v4.0.
+        severity: high
+        auto_auditable: false
+      - id: KAF-10.2
+        name: No almacenamiento de tarjetas
+        description: Datos de tarjeta nunca almacenados.
+        severity: critical
+        auto_auditable: true
+      - id: KAF-10.3
+        name: Webhook firmado
+        description: Webhooks verificados con HMAC-SHA256.
+        severity: high
+        auto_auditable: true
+
+  - id: 11
+    name: legal_mx
+    controls:
+      - id: KAF-11.1
+        name: NOM-151
+        description: Cumplimiento NOM-151-SCFI-2016.
+        severity: high
+        auto_auditable: false
+      - id: KAF-11.2
+        name: PSC acreditado
+        description: Sellado con PSC acreditado por SE.
+        severity: high
+        auto_auditable: false
+      - id: KAF-11.3
+        name: CNBV mapping
+        description: Mapeo a requisitos CNBV para fintechs.
+        severity: medium
+        auto_auditable: false
+
+  - id: 12
+    name: gobernanza
+    controls:
+      - id: KAF-12.1
+        name: ISO 42001
+        description: Sistema de Gestión de IA documentado.
+        severity: critical
+        auto_auditable: false
+      - id: KAF-12.2
+        name: NIST AI RMF
+        description: Mapeo a NIST AI Risk Management Framework.
+        severity: high
+        auto_auditable: false
+      - id: KAF-12.3
+        name: Políticas documentadas
+        description: Políticas de acceso, cifrado, incidentes.
+        severity: high
+        auto_auditable: false
+      - id: KAF-12.4
+        name: Auditoría anual
+        description: Auditoría externa anual completada.
+        severity: high
+        auto_auditable: false
