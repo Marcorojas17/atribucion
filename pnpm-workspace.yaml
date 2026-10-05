@@ -1,0 +1,4 @@
+packages:
+  - "sdk/js"
+  - "sdk/cli"
+  - "apps/*"
