@@ -1,0 +1,11 @@
+json
+{
+  "experimental": {
+    "mcpServers": {
+      "atribucion": {
+        "command": "python",
+        "args": ["-m", "ai_recognition.mcp.server"]
+      }
+    }
+  }
+}
