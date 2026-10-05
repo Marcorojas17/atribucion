@@ -1,0 +1,27 @@
+{
+  "name": "atribucion-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Compliance EU AI Act para agentes IA en un solo endpoint",
+  "author": "Marco Antonio Rojas Valdovinos <hola@atribucion.io>",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Marcorojas17/atribucion.git"
+  },
+  "workspaces": [
+    "sdk/js",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "echo 'Use make dev para el backend'",
+    "test": "pnpm -r test",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
