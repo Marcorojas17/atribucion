@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Atribución</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-elev: #141414;
+      --fg: #f5f5f5;
+      --fg-muted: #888;
+      --accent: #00ff88;
+      --accent-dim: #00cc6a;
+      --border: #222;
+      --danger: #ff4444;
+      --warn: #ffaa00;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      padding: 48px 32px;
+    }
+    .icon {
+      font-size: 72px;
+      margin-bottom: 24px;
+      line-height: 1;
+    }
+    .icon.success { color: var(--accent); }
+    .icon.failure { color: var(--danger); }
+    .icon.pending { color: var(--warn); }
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    p {
+      color: var(--fg-muted);
+      margin-bottom: 32px;
+      font-size: 15px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      background: var(--accent);
+      color: #000;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 15px;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: var(--accent-dim); }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--fg);
+      margin-top: 12px;
+    }
+    .btn-ghost:hover {
+      border-color: var(--fg-muted);
+      background: var(--bg-elev);
+    }
+    .info {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 24px;
+      text-align: left;
+      font-size: 14px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      color: var(--fg-muted);
+    }
+    .info-row strong { color: var(--fg); }
+  </style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <div class="icon" id="icon">⏳</div>
+  <h1 id="title">Procesando...</h1>
+  <p id="message">Verificando el estado de tu pago.</p>
+  <div id="details"></div>
+  <a href="https://atribucion.io/dashboard" class="btn" id="primaryBtn">Ir al dashboard</a>
+  <a href="https://atribucion.io" class="btn btn-ghost">Volver al inicio</a>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get("status") || params.get("collection_status") || "pending";
+  const paymentId = params.get("payment_id") || params.get("collection_id");
+  const externalRef = params.get("external_reference");
+
+  const icons = {
+    success: "✓",
+    failure: "✕",
+    pending: "⏳",
+  };
+  const titles = {
+    success: "¡Pago exitoso!",
+    failure: "Pago rechazado",
+    pending: "Pago pendiente",
+  };
+  const messages = {
+    success: "Tu suscripción está activa. Ya puedes usar Atribución.",
+    failure: "No pudimos procesar tu pago. Intenta de nuevo.",
+    pending: "Tu pago está siendo procesado. Te notificaremos cuando esté listo.",
+  };
+
+  const normalized = status === "approved" || status === "success" ? "success"
+    : status === "rejected" || status === "failure" ? "failure"
+    : "pending";
+
+  document.getElementById("icon").className = "icon " + normalized;
+  document.getElementById("icon").textContent = icons[normalized];
+  document.getElementById("title").textContent = titles[normalized];
+  document.getElementById("message").textContent = messages[normalized];
+
+  if (paymentId || externalRef) {
+    const details = document.getElementById("details");
+    const info = document.createElement("div");
+    info.className = "info";
+    let html = "";
+    if (paymentId) html += `<div class="info-row"><span>ID de pago</span><strong>${paymentId}</strong></div>`;
+    if (externalRef) html += `<div class="info-row"><span>Referencia</span><strong>${externalRef}</strong></div>`;
+    info.innerHTML = html;
+    details.appendChild(info);
+  }
+
+  if (normalized === "failure") {
+    document.getElementById("primaryBtn").href = "https://atribucion.io/signup?plan=pro";
+    document.getElementById("primaryBtn").textContent = "Reintentar pago";
+  }
+</script>
+
+</body>
+</html>
