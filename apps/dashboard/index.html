@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Atribución</title>
+  <meta name="description" content="Panel de control para clientes de Atribución.">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-elev: #141414;
+      --bg-hover: #1a1a1a;
+      --fg: #f5f5f5;
+      --fg-muted: #888;
+      --accent: #00ff88;
+      --accent-dim: #00cc6a;
+      --border: #222;
+      --danger: #ff4444;
+      --warn: #ffaa00;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0 32px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .logo {
+      font-family: ui-monospace, monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .nav { display: flex; gap: 24px; align-items: center; }
+    .nav a {
+      color: var(--fg-muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.15s;
+    }
+    .nav a:hover, .nav a.active { color: var(--accent); }
+    h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .subtitle { color: var(--fg-muted); margin-bottom: 32px; font-size: 14px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .stat {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .stat-label { font-size: 12px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; }
+    .stat-value.accent { color: var(--accent); }
+    .section { margin-bottom: 40px; }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    h2 { font-size: 18px; font-weight: 700; }
+    .btn {
+      padding: 10px 20px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: var(--accent-dim); }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--fg);
+    }
+    .btn-ghost:hover { border-color: var(--fg-muted); background: var(--bg-hover); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 14px;
+    }
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      background: var(--bg-hover);
+      font-size: 12px;
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg-hover); }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .badge.active { background: rgba(0, 255, 136, 0.15); color: var(--accent); }
+    .badge.paused { background: rgba(255, 170, 0, 0.15); color: var(--warn); }
+    .badge.error { background: rgba(255, 68, 68, 0.15); color: var(--danger); }
+    .mono { font-family: ui-monospace, monospace; font-size: 13px; }
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--fg-muted);
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+    footer {
+      padding: 32px 0;
+      text-align: center;
+      color: var(--fg-muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+      margin-top: 64px;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    .quickstart {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      font-family: ui-monospace, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--fg);
+      overflow-x: auto;
+    }
+    .quickstart .c { color: #555; }
+    .quickstart .s { color: #ffcc66; }
+    .quickstart .k { color: #ff88dd; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <a href="https://atribucion.io" class="logo">◆ atribución</a>
+    <nav class="nav">
+      <a href="#" class="active">Dashboard</a>
+      <a href="/docs">Docs</a>
+      <a href="https://github.com/Marcorojas17/atribucion" target="_blank">GitHub</a>
+      <a href="#" id="logout">Salir</a>
+    </nav>
+  </header>
+
+  <h1>Dashboard</h1>
+  <p class="subtitle">Panel de control de tus agentes y certificados.</p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Agentes activos</div>
+      <div class="stat-value accent" id="statAgents">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Certificados este mes</div>
+      <div class="stat-value" id="statCerts">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Uptime (30d)</div>
+      <div class="stat-value">99.98%</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Plan actual</div>
+      <div class="stat-value" id="statPlan">Pro</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Tus agentes</h2>
+      <button class="btn" onclick="alert('Próximamente: registro de agentes en UI')">
+        + Nuevo agente
+      </button>
+    </div>
+    <div id="agentsTable">
+      <div class="empty">
+        <div class="empty-icon">🤖</div>
+        <p>Aún no tienes agentes registrados.</p>
+        <p style="margin-top: 8px;">Usa la API o la CLI para registrar tu primer agente.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Quickstart</h2>
+    </div>
+    <div class="quickstart">
+<span class="c"># Instala el SDK</span>
+<span class="k">npm</span> install @atribucion/sdk
+
+<span class="c"># O con Python</span>
+<span class="k">pip</span> install atribucion-sdk
+
+<span class="c"># Registra tu primer agente</span>
+<span class="k">const</span> client = <span class="k">new</span> AtribucionClient({ apiKey: <span class="s">"ak_live_..."</span> });
+<span class="k">const</span> agent = <span class="k">await</span> client.registerAgent({
+  name: <span class="s">"MiAgente"</span>,
+  autonomyLevel: <span class="s">"semi-autonomo"</span>,
+  proveedorModelo: <span class="s">"anthropic"</span>,
+  operatorDid: <span class="s">"did:kronos:human:0x..."</span>,
+  publicKeyPem: pubPem,
+});
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="https://atribucion.io">atribucion.io</a> ·
+  <a href="https://docs.atribucion.io">Docs</a> ·
+  © 2026 Atribución — Marco Antonio Rojas Valdovinos
+</footer>
+
+<script>
+  // Placeholder: cuando exista auth real, cargar datos
+  const API_BASE = "https://api.atribucion.io";
+  // const API_BASE = "http://localhost:8000";
+
+  document.getElementById("statAgents").textContent = "0";
+  document.getElementById("statCerts").textContent = "0";
+
+  document.getElementById("logout").addEventListener("click", (e) => {
+    e.preventDefault();
+    alert("Próximamente: cerrar sesión");
+  });
+</script>
+
+</body>
+</html>
