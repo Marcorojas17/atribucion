@@ -1,0 +1,58 @@
+{
+  "version": "1.0.0",
+  "owner": {
+    "name": "Marco Antonio Rojas Valdovinos",
+    "location": "México",
+    "role": "Fundador, arquitecto, único contribuidor"
+  },
+  "projects": {
+    "atribucion": {
+      "type": "producto B2B compliance EU AI Act",
+      "status": "mvp-en-construccion",
+      "pricing": {
+        "free": "0 EUR/mes",
+        "pro": "990 EUR/mes",
+        "bank": "9900 EUR/mes"
+      },
+      "repo": "https://github.com/Marcorojas17/atribucion"
+    },
+    "kronos": {
+      "type": "jurisdicción digital soberana",
+      "status": "fase-fundacional"
+    },
+    "kaf": {
+      "type": "estándar de certificación IA",
+      "version": "1.0.0",
+      "levels": ["KAF-1 Verified", "KAF-2 Compliant", "KAF-3 Assured", "KAF-4 Sovereign"]
+    }
+  },
+  "ai_instructions": {
+    "language": "es",
+    "tone": "técnico, sin adornos",
+    "response_format": [
+      "diagnóstico",
+      "diseño",
+      "implementación",
+      "riesgos",
+      "siguiente_paso"
+    ],
+    "never": [
+      "inventar",
+      "teoría sin código",
+      "pedir contexto ya provisto",
+      "duplicar conceptos"
+    ],
+    "always": [
+      "código copy-paste-ready",
+      "tablas y árboles",
+      "marcar deuda 🔴",
+      "marcar logro 🟢"
+    ]
+  },
+  "entry_points": {
+    "human_readable": "AI-CONTEXT.md",
+    "machine_readable": "AI-MANIFEST.json",
+    "agents_contract": "AGENTS.md",
+    "master_prompt": "PROMPT-MAESTRO.md"
+  }
+}
