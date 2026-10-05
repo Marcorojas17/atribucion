@@ -1,0 +1,423 @@
+atribucion/
+│
+├── README.md
+├── AI-CONTEXT.md
+├── AI-MANIFEST.json
+├── AI-MCP-SERVER.md
+├── AGENTS.md
+├── PROMPT-MAESTRO.md
+├── CLAUDE.md
+├── GEMINI.md
+├── .cursorrules
+├── LICENSE-MIT
+├── LICENSE-APACHE
+├── LICENSE-CC-BY-4.0
+├── LICENSE-TRADEMARK
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── SECURITY.md
+├── .gitignore
+├── .editorconfig
+├── .env.example
+├── package.json
+├── pnpm-workspace.yaml
+├── pyproject.toml
+├── requirements.txt
+├── docker-compose.yml
+├── Makefile
+│
+├── .github/
+│   ├── workflows/
+│   │   ├── ci.yml
+│   │   ├── verify.yml
+│   │   ├── security.yml
+│   │   └── deploy.yml
+│   ├── CODEOWNERS
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── ISSUE_TEMPLATE/
+│       ├── bug_report.md
+│       ├── feature_request.md
+│       └── rfc_proposal.md
+│
+├── atribucion/                           # ⭐ EL PRODUCTO VENDIBLE
+│   ├── __init__.py
+│   ├── api/
+│   │   ├── __init__.py
+│   │   ├── actions.py                    ✅ (endpoint POST /v1/agents/{id}/actions)
+│   │   ├── agents.py                     🔴
+│   │   ├── proofs.py                     🔴
+│   │   └── reports.py                    🔴
+│   ├── dashboard/
+│   │   ├── __init__.py
+│   │   ├── repository.py                 🔴 (AgentRepository, CertificateRepository, TenantRepository)
+│   │   ├── metrics.py                    🔴
+│   │   └── views.py                      🔴
+│   ├── billing/
+│   │   ├── __init__.py
+│   │   ├── mercadopago.py                ✅ (checkout + suscripciones + webhooks)
+│   │   ├── plans.py                      🔴 (PLANS movido aquí para import limpio)
+│   │   └── invoices.py                   🔴
+│   ├── onboarding/
+│   │   ├── __init__.py
+│   │   ├── flow.py                       ✅ (4 pasos: cuenta → plan → agente → request)
+│   │   ├── steps.py                      🔴 (validadores por paso)
+│   │   └── emails.py                     🔴 (bienvenida, plan activado, primer cert)
+│   ├── notifications/
+│   │   ├── __init__.py
+│   │   ├── email.py                      🔴
+│   │   ├── slack.py                      🔴
+│   │   └── webhooks.py                   🔴
+│   ├── sla/
+│   │   ├── __init__.py
+│   │   ├── monitor.py                    🔴
+│   │   └── report.py                     🔴
+│   └── tests/
+│       ├── __init__.py
+│       ├── test_actions.py               🔴
+│       ├── test_onboarding.py            🔴
+│       └── test_mercadopago.py           🔴
+│
+├── ai-recognition/
+│   ├── profile/
+│   │   ├── marco.md                      🔴 (bio real pendiente)
+│   │   ├── kronos.md                     🔴
+│   │   ├── atribucion.md                 🔴
+│   │   ├── kaf.md                        🔴
+│   │   └── marco-mcp.md                  🔴
+│   ├── state/
+│   │   ├── current-phase.md              🔴 (decir 29%, no Fase 0)
+│   │   ├── roadmap.md                    🔴
+│   │   ├── decisions.md                  🔴
+│   │   ├── pending.md                    🔴
+│   │   └── log.md                        🔴
+│   ├── protocols/
+│   │   ├── how-to-respond.md             🔴
+│   │   ├── how-to-collaborate.md         🔴
+│   │   ├── language.md                   🔴
+│   │   └── anti-patterns.md              🔴
+│   ├── mcp/
+│   │   ├── server.py                     🔴
+│   │   ├── tools.py                      🔴
+│   │   ├── resources.py                  🔴
+│   │   ├── prompts.py                    🔴
+│   │   └── config.json                   🔴
+│   ├── sdk/
+│   │   ├── js/                           🔴
+│   │   └── python/                       🔴
+│   └── tests/                            🔴
+│
+├── engine/
+│   ├── runtime/
+│   │   ├── agent.py                      🔴
+│   │   ├── state_machine.py              🔴
+│   │   ├── scheduler.py                  🔴
+│   │   ├── executor.py                   🔴
+│   │   └── sandbox.py                    🔴
+│   ├── inference/
+│   │   ├── local/
+│   │   │   ├── llama_cpp.py              🔴
+│   │   │   ├── ollama.py                 🔴
+│   │   │   ├── mlx.py                    🔴
+│   │   │   └── vllm.py                   🔴
+│   │   ├── fallback/
+│   │   │   ├── openai.py                 🔴
+│   │   │   ├── anthropic.py              🔴
+│   │   │   └── gemini.py                 🔴
+│   │   ├── router.py                     🔴
+│   │   └── quantize.py                   🔴
+│   ├── memory/
+│   │   ├── episodic.py                   🔴
+│   │   ├── semantic.py                   🔴
+│   │   ├── procedural.py                 🔴
+│   │   ├── vector_store.py               🔴
+│   │   ├── graph_store.py                🔴
+│   │   └── consolidation.py              🔴
+│   ├── reasoning/
+│   │   ├── planner.py                    🔴
+│   │   ├── chain_of_thought.py           🔴
+│   │   ├── tool_use.py                   🔴
+│   │   ├── reflection.py                 🔴
+│   │   └── debate.py                     🔴
+│   ├── learning/
+│   │   ├── local_rlhf.py                 🔴
+│   │   ├── fine_tune.py                  🔴
+│   │   ├── distill.py                    🔴
+│   │   └── experience.py                 🔴
+│   ├── orchestrator/
+│   │   ├── madre.py                      🔴
+│   │   ├── handoff.py                    🔴
+│   │   ├── canonical_memory.py           🔴
+│   │   └── context.py                    🔴
+│   └── tests/                            🔴
+│
+├── mesh/
+│   ├── transport/
+│   │   ├── libp2p.py                     🔴
+│   │   ├── quic.py                       🔴
+│   │   ├── webrtc.py                     🔴
+│   │   └── nostr.py                      🔴
+│   ├── discovery/
+│   │   ├── mdns.py                       🔴
+│   │   ├── dht.py                        🔴
+│   │   ├── rendezvous.py                 🔴
+│   │   └── bootstrap.py                  🔴
+│   ├── consensus/
+│   │   ├── raft.py                       🔴
+│   │   ├── byzantine.py                  🔴
+│   │   ├── crdt.py                       🔴
+│   │   └── gossip.py                     🔴
+│   ├── storage/
+│   │   ├── sqlite.py                     🔴
+│   │   ├── dexie.py                      🔴
+│   │   ├── ipfs.py                       🔴
+│   │   ├── arweave.py                    🔴
+│   │   └── replication.py                🔴
+│   ├── sync/
+│   │   ├── delta.py                      🔴
+│   │   ├── conflict.py                   🔴
+│   │   └── merkle_sync.py                🔴
+│   └── tests/                            🔴
+│
+├── guards/
+│   ├── base.py                           🔴
+│   ├── sentinel/
+│   │   ├── agent.py                      🔴
+│   │   ├── policies.yaml                 🔴
+│   │   └── tests/                        🔴
+│   ├── oracle/
+│   │   ├── agent.py                      🔴
+│   │   ├── sources.yaml                  🔴
+│   │   └── tests/                        🔴
+│   ├── nexus/
+│   │   ├── agent.py                      🔴
+│   │   ├── topology.yaml                 🔴
+│   │   └── tests/                        🔴
+│   ├── phoenix/
+│   │   ├── agent.py                      🔴
+│   │   ├── recovery.yaml                 🔴
+│   │   └── tests/                        🔴
+│   ├── acta/
+│   │   ├── agent.py                      🔴
+│   │   └── policies.yaml                 🔴
+│   ├── mrr/
+│   │   ├── agent.py                      🔴
+│   │   └── rules.yaml                    🔴
+│   ├── sha/
+│   │   ├── agent.py                      🔴 (el que ya te ganó 2 veces)
+│   │   └── checks.yaml                   🔴
+│   ├── tsa/
+│   │   ├── agent.py                      🔴
+│   │   └── sources.yaml                  🔴
+│   ├── vault/
+│   │   ├── agent.py                      🔴
+│   │   └── policies.yaml                 🔴
+│   └── tests/                            🔴
+│
+├── robotics/
+│   ├── drivers/
+│   │   ├── ros2.py                       🔴
+│   │   ├── mqtt.py                       🔴
+│   │   └── modbus.py                     🔴
+│   ├── identity/
+│   │   ├── hardware_id.py                🔴
+│   │   ├── did_robot.py                  🔴
+│   │   └── proof_presence.py             🔴
+│   ├── perception/
+│   │   ├── vision.py                     🔴
+│   │   ├── lidar.py                      🔴
+│   │   └── audio.py                      🔴
+│   ├── actuation/
+│   │   ├── motors.py                     🔴
+│   │   ├── servos.py                     🔴
+│   │   └── safety.py                     🔴
+│   └── tests/                            🔴
+│
+├── kaf/
+│   ├── framework/
+│   │   ├── KAF-001-marco-general.md      🔴
+│   │   ├── KAF-002-identidad.md          🔴
+│   │   ├── KAF-003-atribucion.md         🔴
+│   │   ├── KAF-004-trazabilidad.md       🔴
+│   │   ├── KAF-005-supervision.md        🔴
+│   │   ├── KAF-006-explicabilidad.md     🔴
+│   │   ├── KAF-007-seguridad.md          🔴
+│   │   ├── KAF-008-privacidad.md         🔴
+│   │   ├── KAF-009-continuidad.md        🔴
+│   │   ├── KAF-010-criptografia.md       🔴
+│   │   ├── KAF-011-pagos.md              🔴
+│   │   ├── KAF-012-legal-mx.md           🔴
+│   │   └── KAF-013-gobernanza.md         🔴
+│   ├── levels/
+│   │   ├── level-1-verified.md           🔴
+│   │   ├── level-2-compliant.md          🔴
+│   │   ├── level-3-assured.md            🔴
+│   │   └── level-4-sovereign.md          🔴
+│   ├── controls/
+│   │   ├── controls.yaml                 🔴 (47 controles)
+│   │   ├── evidence.yaml                 🔴
+│   │   └── mapping/
+│   │       ├── iso-42001.yaml            🔴
+│   │       ├── iso-27001.yaml            🔴
+│   │       ├── soc2.yaml                 🔴
+│   │       ├── pci-dss.yaml              🔴
+│   │       ├── nist-ai-rmf.yaml          🔴
+│   │       └── nom-151.yaml              🔴
+│   ├── certification/
+│   │   ├── auditor.py                    🔴
+│   │   ├── certificate.py                🔴
+│   │   ├── nft.py                        🔴
+│   │   └── registry.py                   🔴
+│   └── tests/                            🔴
+│
+├── security/
+│   ├── compliance/
+│   │   ├── iso-27001.md                  🔴
+│   │   ├── soc2-type2.md                 🔴
+│   │   ├── pci-dss.md                    🔴
+│   │   ├── nist-800-57.md                🔴
+│   │   └── nom-151.md                    🔴
+│   ├── policies/
+│   │   ├── access-control.md             🔴
+│   │   ├── encryption.md                 🔴
+│   │   ├── incident-response.md          🔴
+│   │   └── key-rotation.md               🔴
+│   ├── audits/
+│   │   ├── internal/                     🔴
+│   │   └── external/                     🔴
+│   └── bug-bounty/
+│       ├── program.md                    🔴
+│       └── scope.md                      🔴
+│
+├── payments/
+│   ├── mercadopago/
+│   │   ├── client.py                     🔴 (dup con atribucion/billing)
+│   │   ├── preferences.py                🔴
+│   │   ├── subscriptions.py              🔴
+│   │   ├── webhooks.py                   🔴
+│   │   └── verify.py                     🔴
+│   ├── mxn/
+│   │   ├── conversion.py                 🔴
+│   │   ├── oracle.py                     🔴 (tasa EUR/MXN vía Banxico)
+│   │   └── stablecoin.py                 🔴 (MXNB de Bitso)
+│   ├── nom151/
+│   │   ├── psc_client.py                 🔴 (Incode/Mifiel/JAAK)
+│   │   ├── constancia.py                 🔴
+│   │   └── sello.py                      🔴
+│   └── models.py                         🔴
+│
+├── api/
+│   ├── main.py                           🔴 (FastAPI app + router mounting)
+│   ├── routes/
+│   │   ├── actions.py                    🔴 (dup con atribucion/api)
+│   │   ├── agents.py                     🔴
+│   │   ├── proofs.py                     🔴
+│   │   ├── reports.py                    🔴
+│   │   ├── payments.py                   🔴
+│   │   └── kaf.py                        🔴
+│   ├── middleware/
+│   │   ├── auth.py                       🔴 (TenantContext, get_current_tenant)
+│   │   ├── rate_limit.py                 🔴
+│   │   ├── audit.py                      🔴
+│   │   └── security_headers.py           🔴
+│   └── schemas/
+│       ├── action.py                     🔴
+│       ├── agent.py                      🔴
+│       ├── payment.py                    🔴
+│       └── kaf.py                        🔴
+│
+├── core/
+│   ├── src/atribucion/
+│   │   ├── __init__.py                   🔴
+│   │   ├── did.py                        🔴 (create, resolve, verify)
+│   │   ├── vc.py                         🔴 (issue, verify, revoke)
+│   │   ├── contract.py                   🔴 (load, validate_action, create_default)
+│   │   ├── crypto.py                     🔴 (sign_hybrid, verify_hybrid, hash_double, canonical_json)
+│   │   ├── anchor.py                     🔴 (submit, pin_to_ipfs)
+│   │   ├── tsa.py                        🔴 (seal RFC 3161)
+│   │   └── merkle.py                     🔴 (root_of, proof, verify)
+│   └── tests/
+│       ├── test_did.py                   🔴
+│       ├── test_crypto.py                🔴
+│       ├── test_merkle.py                🔴
+│       └── test_anchor.py                🔴
+│
+├── sdk/
+│   ├── js/
+│   │   ├── package.json                  🔴 (@atribucion/sdk)
+│   │   ├── src/
+│   │   │   ├── index.ts                  🔴
+│   │   │   ├── client.ts                 🔴
+│   │   │   ├── crypto.ts                 🔴
+│   │   │   └── types.ts                  🔴
+│   │   └── tests/                        🔴
+│   ├── python/
+│   │   ├── pyproject.toml                🔴 (atribucion-sdk)
+│   │   ├── src/atribucion_sdk/
+│   │   │   ├── __init__.py               🔴
+│   │   │   ├── client.py                 🔴
+│   │   │   ├── crypto.py                 🔴
+│   │   │   └── types.py                  🔴
+│   │   └── tests/                        🔴
+│   └── cli/
+│       └── package.json                  🔴 (atribucion-cli)
+│
+├── apps/
+│   ├── portal/                           🔴 (landing atribucion.io)
+│   ├── dashboard/                        🔴 (panel del cliente)
+│   ├── verifier/                         🔴 (verificar certificados)
+│   ├── checkout/                         🔴 (success/failure/pending)
+│   └── kaf-portal/                       🔴 (certificación KAF)
+│
+├── contracts/
+│   ├── AttributionRegistry.sol           🔴
+│   ├── PaymentSplitter.sol               🔴
+│   ├── KAFRegistry.sol                   🔴
+│   └── deploy/
+│       ├── deploy_sepolia.py             🔴
+│       ├── deploy_mainnet.py             🔴
+│       └── config.json                   🔴
+│
+├── docs/
+│   ├── index.md                          🔴
+│   ├── quickstart.md                     🔴 (5 min para integrar)
+│   ├── kaf/                              🔴
+│   ├── compliance/
+│   │   └── eu-ai-act.md                  🔴 (argumento de venta)
+│   ├── payments/
+│   │   ├── mercadopago.md                🔴
+│   │   └── mxn.md                        🔴
+│   ├── security/                         🔴
+│   ├── mesh/                             🔴
+│   ├── engine/                           🔴
+│   └── api/
+│       └── reference.md                  🔴
+│
+├── legal/
+│   ├── LICENSE-MIT                       🔴
+│   ├── LICENSE-APACHE                    🔴
+│   ├── LICENSE-CC-BY-4.0                 🔴
+│   ├── LICENSE-TRADEMARK                 🔴
+│   ├── CONTRIBUTOR-LICENSE-AGREEMENT.md  🔴
+│   ├── terms.md                          🔴
+│   ├── privacy.md                        🔴
+│   ├── dpa.md                            🔴
+│   └── compliance/
+│       ├── eu-ai-act-mapping.md          🔴
+│       ├── nom-151-mapping.md            🔴
+│       └── cnbv-mapping.md               🔴
+│
+├── infra/
+│   ├── terraform/                        🔴
+│   ├── k8s/                              🔴
+│   └── vault/                            🔴
+│
+├── tests/
+│   ├── unit/                             🔴
+│   ├── integration/                      🔴
+│   ├── e2e/
+│   │   └── payment_flow.spec.ts          🔴
+│   └── fixtures/                         🔴
+│
+└── scripts/
+    ├── seed_demo.py                      🔴
+    └── generate_report.py                🔴
