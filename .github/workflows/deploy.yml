@@ -1,0 +1,87 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # ─────────────────────────────────────────────────────────
+  # DEPLOY LANDING + VERIFIER a GitHub Pages
+  # ─────────────────────────────────────────────────────────
+  deploy-pages:
+    name: Deploy a GitHub Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar artefacto
+        run: |
+          mkdir -p _site
+          cp -r apps/portal/* _site/ 2>/dev/null || true
+          mkdir -p _site/verify
+          cp -r apps/verifier/* _site/verify/ 2>/dev/null || true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # ─────────────────────────────────────────────────────────
+  # DEPLOY API a Railway
+  # ─────────────────────────────────────────────────────────
+  deploy-api:
+    name: Deploy a Railway
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy a Railway
+        uses: bervProject/railway-deploy@main
+        if: env.RAILWAY_TOKEN != ''
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        with:
+          service: atribucion-api
+
+  # ─────────────────────────────────────────────────────────
+  # RELEASE en GitHub
+  # ─────────────────────────────────────────────────────────
+  release:
+    name: Crear Release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [deploy-pages]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Crear GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          draft: false
