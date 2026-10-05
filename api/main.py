@@ -127,10 +127,21 @@ async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse
 # ROUTES
 # ─────────────────────────────────────────────────────────────
 
+# ─────────────────────────────────────────────────────────────
+# ROUTES
+# ─────────────────────────────────────────────────────────────
+
+from api.routes.actions import router as actions_router
+from api.routes.agents import router as agents_router
+from api.routes.payments import router as payments_router
+from api.routes.proofs import router as proofs_router
+from api.routes.reports import router as reports_router
+
 app.include_router(actions_router)
 app.include_router(agents_router)
 app.include_router(proofs_router)
-
+app.include_router(payments_router)
+app.include_router(reports_router)
 
 # ─────────────────────────────────────────────────────────────
 # ROOT
