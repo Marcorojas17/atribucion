@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificar certificado — Atribución</title>
+  <meta name="description" content="Verifica la autenticidad de un certificado emitido por Atribución.">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-elev: #141414;
+      --fg: #f5f5f5;
+      --fg-muted: #888;
+      --accent: #00ff88;
+      --accent-dim: #00cc6a;
+      --border: #222;
+      --danger: #ff4444;
+      --warn: #ffaa00;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: ui-monospace, monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    main {
+      flex: 1;
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    h1 {
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--fg-muted);
+      margin-bottom: 40px;
+    }
+
+    .search {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    input {
+      flex: 1;
+      padding: 14px 16px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--fg);
+      font-size: 15px;
+      font-family: ui-monospace, monospace;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus { border-color: var(--accent); }
+
+    button {
+      padding: 14px 24px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    button:hover { background: var(--accent-dim); }
+    button:disabled {
+      background: var(--border);
+      color: var(--fg-muted);
+      cursor: not-allowed;
+    }
+
+    .result {
+      display: none;
+      margin-top: 32px;
+    }
+
+    .result.visible { display: block; }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+
+    .status.valid {
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .status.invalid {
+      background: rgba(255, 68, 68, 0.1);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .status.pending {
+      background: rgba(255, 170, 0, 0.1);
+      border: 1px solid var(--warn);
+      color: var(--warn);
+    }
+
+    .status-icon { font-size: 24px; }
+
+    .field {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .field-label {
+      color: var(--fg-muted);
+      font-weight: 600;
+    }
+
+    .field-value {
+      font-family: ui-monospace, monospace;
+      word-break: break-all;
+      color: var(--fg);
+    }
+
+    .field-value.highlight { color: var(--accent); }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error {
+      padding: 16px;
+      background: rgba(255, 68, 68, 0.1);
+      border: 1px solid var(--danger);
+      border-radius: 6px;
+      color: var(--danger);
+      font-size: 14px;
+    }
+
+    footer {
+      padding: 24px;
+      text-align: center;
+      color: var(--fg-muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .field { grid-template-columns: 1fr; gap: 4px; }
+      .search { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="https://atribucion.io" class="logo">◆ atribución</a>
+</header>
+
+<main>
+  <h1>Verificar certificado</h1>
+  <p class="subtitle">
+    Introduce el ID del certificado (empieza con <code>cert_</code>)
+    para verificar su autenticidad.
+  </p>
+
+  <div class="search">
+    <input
+      type="text"
+      id="certInput"
+      placeholder="cert_abc123..."
+      autocomplete="off"
+      spellcheck="false"
+    >
+    <button id="verifyBtn" onclick="verify()">Verificar</button>
+  </div>
+
+  <div id="error" class="error" style="display: none;"></div>
+
+  <div id="result" class="result">
+    <div id="status" class="status pending">
+      <span class="status-icon" id="statusIcon">⏳</span>
+      <span id="statusText">Verificando...</span>
+    </div>
+
+    <div id="fields"></div>
+  </div>
+</main>
+
+<footer>
+  <a href="https://atribucion.io">atribucion.io</a> ·
+  <a href="https://github.com/Marcorojas17/atribucion">GitHub</a> ·
+  © 2026 Atribución
+</footer>
+
+<script>
+  const API_BASE = "https://api.atribucion.io";
+  // Para desarrollo local:
+  // const API_BASE = "http://localhost:8000";
+
+  const input = document.getElementById("certInput");
+  const btn = document.getElementById("verifyBtn");
+  const result = document.getElementById("result");
+  const error = document.getElementById("error");
+  const status = document.getElementById("status");
+  const statusIcon = document.getElementById("statusIcon");
+  const statusText = document.getElementById("statusText");
+  const fields = document.getElementById("fields");
+
+  // Auto-verificar si viene en la URL
+  const params = new URLSearchParams(window.location.search);
+  const idFromUrl = params.get("id") || params.get("cert");
+  if (idFromUrl) {
+    input.value = idFromUrl;
+    verify();
+  }
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") verify();
+  });
+
+  async function verify() {
+    const certId = input.value.trim();
+
+    // Validación básica
+    if (!certId) {
+      showError("Introduce un ID de certificado.");
+      return;
+    }
+
+    if (!certId.startsWith("cert_")) {
+      showError("El ID debe empezar con 'cert_'.");
+      return;
+    }
+
+    // Reset UI
+    error.style.display = "none";
+    result.classList.remove("visible");
+    btn.disabled = true;
+    btn.textContent = "Verificando...";
+
+    try {
+      const response = await fetch(`${API_BASE}/v1/proofs/${certId}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || "Certificado no encontrado.");
+      }
+
+      showResult(data);
+    } catch (err) {
+      showError(err.message || "Error al verificar. Intenta de nuevo.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Verificar";
+    }
+  }
+
+  function showResult(data) {
+    const isValid = data.status === "válido" || data.status === "valid";
+
+    // Status
+    status.className = "status " + (isValid ? "valid" : "invalid");
+    statusIcon.textContent = isValid ? "✓" : "✕";
+    statusText.textContent = isValid ? "Certificado válido" : "Certificado inválido";
+
+    // Campos
+    fields.innerHTML = "";
+
+    addField("Certificado", data.certificate_id, true);
+    addField("Estado", data.status);
+    addField("Emitido", formatDate(data.issued_at));
+    addField("Agente", data.agent_did);
+    addField("Acción", data.action);
+    addField("Autonomía", data.autonomy_level);
+
+    if (data.hashes) {
+      addField("SHA-256", data.hashes.sha256);
+      addField("SHA-3", data.hashes.sha3);
+    }
+
+    if (data.anchor) {
+      addField("Anclaje TX", data.anchor.tx_hash);
+      addField("Red", data.anchor.network);
+    }
+
+    if (data.timestamp) {
+      addField("Sellado", data.timestamp.sealed_at);
+      addField("TSA", data.timestamp.authority);
+    }
+
+    result.classList.add("visible");
+  }
+
+  function addField(label, value, highlight = false) {
+    if (!value) return;
+    const div = document.createElement("div");
+    div.className = "field";
+    div.innerHTML = `
+      <div class="field-label">${label}</div>
+      <div class="field-value${highlight ? " highlight" : ""}">${value}</div>
+    `;
+    fields.appendChild(div);
+  }
+
+  function formatDate(iso) {
+    try {
+      return new Date(iso).toLocaleString("es-MX", {
+        dateStyle: "long",
+        timeStyle: "medium",
+      });
+    } catch {
+      return iso;
+    }
+  }
+
+  function showError(message) {
+    error.textContent = message;
+    error.style.display = "block";
+    result.classList.remove("visible");
+  }
+</script>
+
+</body>
+</html>
