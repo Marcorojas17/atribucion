@@ -178,3 +178,125 @@ if __name__ == "__main__":
         port=8000,
         reload=True,
     )
+
+"""
+Atribución — Servidor FastAPI.
+
+Punto de entrada del API.
+"""
+
+from __future__ import annotations
+
+from contextlib import asynccontextmanager
+from typing import AsyncIterator
+
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from api import __version__
+from api.middleware.audit import audit_middleware
+from api.middleware.rate_limit import rate_limit_middleware
+from api.middleware.security_headers import security_headers_middleware
+from api.routes.actions import router as actions_router
+from api.routes.agents import router as agents_router
+from api.routes.kaf import router as kaf_router
+from api.routes.payments import router as payments_router
+from api.routes.proofs import router as proofs_router
+from api.routes.reports import router as reports_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    print(f"🚀 Atribución API v{__version__} arrancando...")
+    yield
+    print("👋 Atribución API cerrando...")
+
+
+app = FastAPI(
+    title="Atribución",
+    description=(
+        "Compliance EU AI Act para agentes IA en un solo endpoint.\n\n"
+        "Registra cada acción de tu agente y recibe un certificado "
+        "verificable, anclado a Ethereum, sellado por TSA."
+    ),
+    version=__version__,
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
+    contact={
+        "name": "Marco Antonio Rojas Valdovinos",
+        "email": "hola@atribucion.io",
+        "url": "https://atribucion.io",
+    },
+    license_info={
+        "name": "MIT OR Apache-2.0",
+        "url": "https://github.com/Marcorojas17/atribucion",
+    },
+)
+
+
+# ─── MIDDLEWARE (orden importa) ─────────────────────────────
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.middleware("http")(security_headers_middleware)
+app.middleware("http")(audit_middleware)
+app.middleware("http")(rate_limit_middleware)
+
+
+# ─── EXCEPTION HANDLERS ─────────────────────────────────────
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
+    return JSONResponse(
+        status_code=400,
+        content={
+            "error": "bad_request",
+            "detail": str(exc),
+            "path": request.url.path,
+        },
+    )
+
+
+# ─── ROUTES ─────────────────────────────────────────────────
+app.include_router(actions_router)
+app.include_router(agents_router)
+app.include_router(proofs_router)
+app.include_router(payments_router)
+app.include_router(reports_router)
+app.include_router(kaf_router)
+
+
+# ─── ROOT ───────────────────────────────────────────────────
+@app.get("/", tags=["system"], summary="Información del API")
+async def root() -> dict:
+    return {
+        "service": "atribucion",
+        "version": __version__,
+        "description": "Compliance EU AI Act para agentes IA",
+        "endpoints": {
+            "register_agent": "POST /v1/agents",
+            "record_action": "POST /v1/agents/{agent_id}/actions",
+            "verify_certificate": "GET /v1/proofs/{certificate_id}",
+            "checkout": "POST /v1/payments/checkout",
+            "subscription": "GET /v1/payments/status",
+            "monthly_report": "GET /v1/reports/{yyyy-mm}",
+            "kaf_assess": "POST /v1/kaf/assess/{agent_id}",
+            "kaf_verify": "GET /v1/kaf/verify/{certificate_id}",
+            "kaf_levels": "GET /v1/kaf/levels",
+            "health": "GET /v1/health",
+            "docs": "GET /docs",
+        },
+        "repository": "https://github.com/Marcorojas17/atribucion",
+    }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("api.main:app", host="0.0.0.0", port=8000, reload=True)
