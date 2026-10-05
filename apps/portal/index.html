@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atribución — Compliance EU AI Act en una línea de código</title>
+  <meta name="description" content="Registra cada acción de tus agentes IA y cumple con EU AI Act Art. 12, 14 y 22. Un endpoint. Una línea de código.">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Atribución — Compliance EU AI Act">
+  <meta property="og:description" content="Un endpoint para cumplir con EU AI Act.">
+  <meta property="og:type" content="website">
+
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-elev: #141414;
+      --fg: #f5f5f5;
+      --fg-muted: #888;
+      --accent: #00ff88;
+      --accent-dim: #00cc6a;
+      --border: #222;
+      --code-bg: #1a1a1a;
+      --danger: #ff4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* HEADER */
+    header {
+      padding: 48px 0 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    /* HERO */
+    .hero {
+      padding: 80px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-size: clamp(32px, 6vw, 56px);
+      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+
+    h1 .accent {
+      color: var(--accent);
+    }
+
+    .lead {
+      font-size: 20px;
+      color: var(--fg-muted);
+      max-width: 640px;
+      margin-bottom: 40px;
+    }
+
+    .cta-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dim);
+    }
+
+    .btn-ghost {
+      border-color: var(--border);
+      color: var(--fg);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--fg-muted);
+    }
+
+    /* SECTIONS */
+    section {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: var(--fg-muted);
+      margin-bottom: 16px;
+    }
+
+    /* CODE */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      overflow-x: auto;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 24px 0;
+    }
+
+    code {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: var(--accent);
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: var(--fg);
+    }
+
+    .comment { color: #555; }
+    .string { color: #ffcc66; }
+    .keyword { color: #ff88dd; }
+
+    /* CARDS */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 32px;
+    }
+
+    .card {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .card-num {
+      font-family: ui-monospace, monospace;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
+    /* PRICING */
+    .pricing {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 32px;
+    }
+
+    .price-card {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-card.featured {
+      border-color: var(--accent);
+    }
+
+    .price-name {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      margin-bottom: 16px;
+    }
+
+    .price-amount {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+
+    .price-period {
+      font-size: 14px;
+      color: var(--fg-muted);
+      margin-bottom: 24px;
+    }
+
+    .price-features {
+      list-style: none;
+      margin-bottom: 24px;
+      flex-grow: 1;
+    }
+
+    .price-features li {
+      padding: 8px 0;
+      color: var(--fg-muted);
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .price-features li:before {
+      content: "✓ ";
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 48px 0;
+      color: var(--fg-muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* BADGE */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: rgba(0, 255, 136, 0.1);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="logo">◆ atribución</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="badge">EU AI ACT · AGOSTO 2026</div>
+    <h1>Compliance <span class="accent">EU AI Act</span> para agentes IA en una línea de código.</h1>
+    <p class="lead">
+      Registra cada acción de tus agentes, obtén certificados verificables
+      y cumple con Art. 12, 14 y 22. Sin abogados. Sin infraestructura.
+    </p>
+    <div class="cta-group">
+      <a href="https://atribucion.io/signup" class="btn btn-primary">Empezar gratis →</a>
+      <a href="https://docs.atribucion.io" class="btn btn-ghost">Ver documentación</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>El problema</h2>
+    <p>
+      Desde agosto de 2026, el EU AI Act obliga a toda empresa que
+      despliegue agentes IA de alto riesgo a registrar cada acción,
+      probar supervisión humana y explicar decisiones automatizadas.
+    </p>
+    <p>
+      Multas por incumplir: <strong style="color: var(--danger)">hasta €35M
+      o 7% de facturación global</strong>.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>La solución</h2>
+    <pre><code><span class="comment"># Una línea. Un certificado.</span>
+curl -X POST https://api.atribucion.io/v1/agents/<span class="string">$ID</span>/actions \
+  -H <span class="string">"Authorization: Bearer $API_KEY"</span> \
+  -d <span class="string">'{"action":"trade_executed",...}'</span>
+</code></pre>
+    <p>Recibes:</p>
+    <div class="grid">
+      <div class="card">
+        <div class="card-num">01</div>
+        <h3>Certificado verificable</h3>
+        <p>W3C VC 2.0 firmado con doble algoritmo (ECDSA + ML-DSA).</p>
+      </div>
+      <div class="card">
+        <div class="card-num">02</div>
+        <h3>Anclaje en Ethereum</h3>
+        <p>Inmutable, público, verificable por cualquiera.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">03</div>
+        <h3>Sello de tiempo RFC 3161</h3>
+        <p>Legalmente reconocido en UE (eIDAS) y México (NOM-151).</p>
+      </div>
+      <div class="card">
+        <div class="card-num">04</div>
+        <h3>Informe mensual PDF</h3>
+        <p>Listo para auditores. Cero trabajo extra.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Precios</h2>
+    <div class="pricing">
+      <div class="price-card">
+        <div class="price-name">Free</div>
+        <div class="price-amount">€0</div>
+        <div class="price-period">para siempre</div>
+        <ul class="price-features">
+          <li>1 agente</li>
+          <li>1.000 acciones/mes</li>
+          <li>Certificado verificable</li>
+          <li>Anclaje en Sepolia</li>
+        </ul>
+        <a href="https://atribucion.io/signup" class="btn btn-ghost">Empezar</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-name">Pro</div>
+        <div class="price-amount">€990</div>
+        <div class="price-period">por mes</div>
+        <ul class="price-features">
+          <li>10 agentes</li>
+          <li>Acciones ilimitadas</li>
+          <li>Anclaje en Ethereum mainnet</li>
+          <li>Sello DigiCert</li>
+          <li>Informe PDF mensual</li>
+          <li>Soporte prioritario</li>
+        </ul>
+        <a href="https://atribucion.io/signup?plan=pro" class="btn btn-primary">Empezar →</a>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Bank</div>
+        <div class="price-amount">€9.900</div>
+        <div class="price-period">por mes</div>
+        <ul class="price-features">
+          <li>Agentes ilimitados</li>
+          <li>SLA 99.99%</li>
+          <li>HSM dedicado</li>
+          <li>Auditoría trimestral</li>
+          <li>Compliance CNBV</li>
+        </ul>
+        <a href="mailto:ventas@atribucion.io" class="btn btn-ghost">Contactar</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>
+      <a href="https://github.com/Marcorojas17/atribucion">GitHub</a> ·
+      <a href="https://docs.atribucion.io">Docs</a> ·
+      <a href="mailto:hola@atribucion.io">Contacto</a>
+    </p>
+    <p style="margin-top: 16px;">
+      © 2026 Atribución · Marco Antonio Rojas Valdovinos
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
