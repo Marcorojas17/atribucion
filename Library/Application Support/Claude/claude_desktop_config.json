@@ -1,0 +1,10 @@
+json
+{
+  "mcpServers": {
+    "atribucion": {
+      "command": "python",
+      "args": ["-m", "ai_recognition.mcp.server"],
+      "cwd": "/ruta/a/atribucion"
+    }
+  }
+}
