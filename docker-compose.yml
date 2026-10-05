@@ -1,0 +1,91 @@
+version: "3.9"
+
+services:
+  # ─────────────────────────────────────────────────────────
+  # API — FastAPI de Atribución
+  # ─────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: atribucion-api
+    ports:
+      - "8000:8000"
+    environment:
+      - ENV=development
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - SEPOLIA_RPC_URL=https://rpc.sepolia.org
+      - SEPOLIA_CHAIN_ID=11155111
+    volumes:
+      - ./core:/app/core:ro
+      - ./api:/app/api:ro
+      - ./tests:/app/tests:ro
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ─────────────────────────────────────────────────────────
+  # PostgreSQL — persistencia
+  # ─────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: atribucion-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=atribucion
+      - POSTGRES_USER=atribucion
+      - POSTGRES_PASSWORD=atribucion_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atribucion"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────────────────
+  # Redis — caché + rate limiting
+  # ─────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: atribucion-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────────────────
+  # Landing — servidor estático para apps/portal
+  # ─────────────────────────────────────────────────────────
+  portal:
+    image: nginx:alpine
+    container_name: atribucion-portal
+    ports:
+      - "8080:80"
+    volumes:
+      - ./apps/portal:/usr/share/nginx/html:ro
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: atribucion-network
