@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atribucion-sdk"
+version = "0.1.0"
+description = "SDK oficial de Atribución para Python"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "Marco Antonio Rojas Valdovinos", email = "hola@atribucion.io" }
+]
+keywords = ["atribucion", "compliance", "eu-ai-act", "ai-agents"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "httpx>=0.27.0",
+    "cryptography>=43.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+]
+
+[project.urls]
+Homepage = "https://atribucion.io"
+Documentation = "https://docs.atribucion.io"
+Repository = "https://github.com/Marcorojas17/atribucion"
+
+[tool.setuptools.packages.find]
+where = ["src"]
