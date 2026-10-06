@@ -1,0 +1,251 @@
+# ─────────────────────────────────────────────────────────────
+# GUARDIÁN NEXUS — Topología de servicios externos
+# ─────────────────────────────────────────────────────────────
+# Verifica conectividad con servicios de los que depende Atribución.
+# Detecta: caídas, latencia alta, errores HTTP, timeouts.
+# Acción: activar fallback, notificar, registrar en auditoría.
+# ─────────────────────────────────────────────────────────────
+
+guard: nexus
+version: 1.0.0
+interval_seconds: 300
+severity: high
+
+# ─── SERVICIOS EXTERNOS ──────────────────────────────────────
+
+services:
+  # ─── BLOCKCHAIN ────────────────────────────────────────────
+  - id: ethereum-sepolia-primary
+    name: Ethereum Sepolia (primary)
+    category: blockchain
+    url: https://rpc.sepolia.org
+    method: POST
+    body: '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+    timeout_seconds: 8
+    expected_status: 200
+    critical: true
+    fallbacks: [ethereum-sepolia-fallback-1, ethereum-sepolia-fallback-2]
+    metrics:
+      - block_height
+      - latency_ms
+    action_on_failure:
+      - log
+      - switch_to_fallback
+      - alert
+
+  - id: ethereum-sepolia-fallback-1
+    name: Ethereum Sepolia (PublicNode)
+    category: blockchain
+    url: https://ethereum-sepolia.publicnode.com
+    method: POST
+    body: '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+    timeout_seconds: 8
+    expected_status: 200
+    critical: false
+
+  - id: ethereum-sepolia-fallback-2
+    name: Ethereum Sepolia (Tenderly)
+    category: blockchain
+    url: https://sepolia.gateway.tenderly.co
+    method: POST
+    body: '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+    timeout_seconds: 8
+    expected_status: 200
+    critical: false
+
+  - id: etherscan
+    name: Etherscan API
+    category: blockchain-explorer
+    url: https://api-sepolia.etherscan.io/api?module=stats&action=ethsupply
+    method: GET
+    timeout_seconds: 8
+    expected_status: 200
+    critical: false
+    notes: Para verificación de contratos.
+
+  # ─── ALMACENAMIENTO DESCENTRALIZADO ────────────────────────
+  - id: ipfs-gateway-primary
+    name: IPFS Gateway (ipfs.io)
+    category: storage
+    url: https://ipfs.io/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG
+    method: HEAD
+    timeout_seconds: 10
+    expected_status: 200
+    critical: true
+    fallbacks: [ipfs-gateway-fallback-1, ipfs-gateway-fallback-2]
+    action_on_failure:
+      - log
+      - switch_to_fallback
+      - alert
+
+  - id: ipfs-gateway-fallback-1
+    name: IPFS Gateway (Cloudflare)
+    category: storage
+    url: https://cloudflare-ipfs.com/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG
+    method: HEAD
+    timeout_seconds: 10
+    expected_status: 200
+    critical: false
+
+  - id: ipfs-gateway-fallback-2
+    name: IPFS Gateway (Pinata)
+    category: storage
+    url: https://gateway.pinata.cloud/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG
+    method: HEAD
+    timeout_seconds: 10
+    expected_status: 200
+    critical: false
+
+  - id: arweave
+    name: Arweave
+    category: storage
+    url: https://arweave.net/info
+    method: GET
+    timeout_seconds: 10
+    expected_status: 200
+    critical: true
+    notes: Almacenamiento permanente de certificados.
+
+  # ─── TSA ───────────────────────────────────────────────────
+  - id: freetsa
+    name: FreeTSA
+    category: tsa
+    url: https://freetsa.org
+    method: HEAD
+    timeout_seconds: 8
+    expected_status: 200
+    critical: false
+    notes: Fallback de sellado de tiempo.
+
+  - id: digicert-tsa
+    name: DigiCert TSA
+    category: tsa
+    url: http://timestamp.digicert.com
+    method: HEAD
+    timeout_seconds: 10
+    expected_status: 200
+    critical: true
+    notes: TSA principal en producción.
+
+  # ─── PAGOS ─────────────────────────────────────────────────
+  - id: mercadopago
+    name: Mercado Pago API
+    category: payments
+    url: https://api.mercadopago.com/v1/payments/search
+    method: GET
+    timeout_seconds: 8
+    expected_status: [200, 401]
+    critical: true
+    notes: 401 = conectividad OK sin auth.
+
+  # ─── INTERNOS ──────────────────────────────────────────────
+  - id: internal-api
+    name: Atribución API
+    category: internal
+    url: ${API_URL:-http://localhost:8000}/v1/health
+    method: GET
+    timeout_seconds: 5
+    expected_status: 200
+    expected_body_contains: "ok"
+    critical: true
+
+  - id: internal-postgres
+    name: PostgreSQL
+    category: internal
+    type: tcp
+    host: ${POSTGRES_HOST:-localhost}
+    port: ${POSTGRES_PORT:-5432}
+    timeout_seconds: 3
+    critical: false
+    notes: Solo si DB == postgres.
+
+  - id: internal-redis
+    name: Redis
+    category: internal
+    type: tcp
+    host: ${REDIS_HOST:-localhost}
+    port: ${REDIS_PORT:-6379}
+    timeout_seconds: 3
+    critical: false
+    notes: Solo si cache == redis.
+
+# ─── UMBRALES ────────────────────────────────────────────────
+
+thresholds:
+  latency_warning_ms: 1000
+  latency_critical_ms: 5000
+  consecutive_failures_warning: 2
+  consecutive_failures_critical: 3
+  response_time_degradation_percent: 50
+
+# ─── MONITOREO ───────────────────────────────────────────────
+
+monitoring:
+  parallel_checks: true
+  max_workers: 8
+  timeout_global_seconds: 60
+  retry_on_failure: 2
+  retry_delay_seconds: 3
+  health_history_size: 100
+
+# ─── CIRCUIT BREAKER ─────────────────────────────────────────
+
+circuit_breaker:
+  enabled: true
+  failure_threshold: 5
+  success_threshold: 2
+  timeout_seconds: 60
+  half_open_max_calls: 3
+
+# ─── NOTIFICACIONES ──────────────────────────────────────────
+
+notifications:
+  - channel: log
+    level: info
+  - channel: email
+    to: ops@atribucion.io
+    only_on: [warning, critical]
+  - channel: slack
+    webhook: ${SLACK_WEBHOOK_OPS}
+    only_on: critical
+  - channel: pagerduty
+    only_on: critical
+    severity_filter: critical
+
+# ─── MÉTRICAS ────────────────────────────────────────────────
+
+metrics:
+  - name: service_status
+    type: gauge
+    labels: [service_id, category]
+  - name: service_latency_ms
+    type: histogram
+    labels: [service_id]
+  - name: service_failures_total
+    type: counter
+    labels: [service_id, reason]
+  - name: fallback_activations_total
+    type: counter
+    labels: [from_service, to_service]
+  - name: circuit_breaker_state
+    type: gauge
+    labels: [service_id, state]
+
+# ─── RETENCIÓN ───────────────────────────────────────────────
+
+retention:
+  health_checks_days: 30
+  incident_logs_days: 365
+  metrics_days: 90
+
+# ─── CONFIGURACIÓN AVANZADA ──────────────────────────────────
+
+advanced:
+  log_level: INFO
+  persist_state: true
+  state_file: ~/.atribucion/guards/nexus-state.json
+  enable_parallel: true
+  geo_distributed: false
+  probes:
+    - region: primary
+      enabled: true
