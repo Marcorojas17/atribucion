@@ -1,0 +1,138 @@
+# ─────────────────────────────────────────────────────────────
+# GUARDIÁN SHA — Checks canónicos
+# ─────────────────────────────────────────────────────────────
+# Verifica integridad criptográfica de certificados emitidos.
+# Detecta: replay attacks, hashes inválidos, gaps en la cadena.
+# ─────────────────────────────────────────────────────────────
+
+guard: sha
+version: 1.0.0
+interval_seconds: 120
+severity: critical
+
+# ─── QUÉ VERIFICA ─────────────────────────────────────────────
+
+checks:
+  - id: sha-001
+    name: hash_format_sha256
+    description: |
+      Verifica que cada hash SHA-256 en certificados tenga
+      exactamente 64 caracteres hexadecimales.
+      Un hash malformado indica manipulación o corrupción.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - freeze_certificate
+
+  - id: sha-002
+    name: hash_format_sha3
+    description: |
+      Verifica que cada hash SHA-3-256 tenga 64 caracteres hex.
+      Complementario a SHA-256 para detección de colisiones.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - freeze_certificate
+
+  - id: sha-003
+    name: replay_detection
+    description: |
+      Detecta si el mismo hash aparece en 2+ certificados.
+      Un hash duplicado indica posible replay attack.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - freeze_certificate
+      - notify_security_team
+
+  - id: sha-004
+    name: merkle_integrity
+    description: |
+      Recalcula el Merkle root de cada lote y lo compara
+      con el registrado on-chain.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - halt_anchoring
+
+  - id: sha-005
+    name: anchor_chain_gaps
+    description: |
+      Verifica que los block numbers de anclajes no tengan
+      gaps mayores a 6 horas.
+    severity: warning
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+
+  - id: sha-006
+    name: certificate_integrity
+    description: |
+      Verifica que el contenido del certificado coincida con
+      su hash registrado. Detecta modificación post-emisión.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - freeze_certificate
+
+# ─── UMBRALES ────────────────────────────────────────────────
+
+thresholds:
+  max_invalid_hashes_per_run: 0
+  max_duplicates_per_run: 0
+  max_anchor_gap_hours: 6
+  max_failures_before_alert: 1
+
+# ─── RUTAS MONITOREADAS ──────────────────────────────────────
+
+paths:
+  certificates: ~/.atribucion/certificates.json
+  anchors: ~/.atribucion/anchors.jsonl
+  logs: ~/.atribucion/logs/sha-guard.jsonl
+  state: ~/.atribucion/guards/sha-state.json
+
+# ─── NOTIFICACIONES ──────────────────────────────────────────
+
+notifications:
+  - channel: log
+    level: warning
+  - channel: email
+    to: security@atribucion.io
+    only_on: critical
+  - channel: slack
+    webhook: ${SLACK_WEBHOOK_SECURITY}
+    only_on: critical
+
+# ─── MÉTRICAS ────────────────────────────────────────────────
+
+metrics:
+  - name: certificates_scanned_total
+    type: counter
+  - name: certificates_valid
+    type: counter
+  - name: certificates_invalid
+    type: counter
+  - name: replay_attacks_detected
+    type: counter
+  - name: scan_duration_seconds
+    type: histogram
+
+# ─── CONFIGURACIÓN AVANZADA ──────────────────────────────────
+
+advanced:
+  max_workers: 4
+  timeout_seconds: 60
+  retry_on_failure: 3
+  retry_delay_seconds: 5
+  log_level: INFO
