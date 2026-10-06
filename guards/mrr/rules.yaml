@@ -1,0 +1,322 @@
+# ─────────────────────────────────────────────────────────────
+# GUARDIÁN MRR — Monitorización de reputación y negocio
+# ─────────────────────────────────────────────────────────────
+# Monitoriza la salud comercial y de reputación.
+# Detecta: churn risk, tenants inactivos, pagos fallidos,
+# degradación de uso, agentes sin actividad.
+# Filosofía: lo que no se mide, no se mejora.
+# ─────────────────────────────────────────────────────────────
+
+guard: mrr
+version: 1.0.0
+interval_seconds: 3600
+severity: high
+
+# ─── MÉTRICAS DE NEGOCIO ─────────────────────────────────────
+
+business_metrics:
+  - id: mrr-001
+    name: monthly_recurring_revenue
+    description: Ingreso recurrente mensual en EUR
+    source: payments_db
+    query: "SELECT SUM(amount_eur) FROM subscriptions WHERE status='active'"
+    threshold_warning: 0
+    threshold_critical: -10
+    severity: critical
+    action_on_failure:
+      - log
+      - alert
+      - notify_founder
+
+  - id: mrr-002
+    name: active_subscriptions
+    description: Número de suscripciones activas
+    source: payments_db
+    query: "SELECT COUNT(*) FROM subscriptions WHERE status='active'"
+    threshold_warning: 1
+    threshold_critical: 0
+    severity: high
+    action_on_failure:
+      - log
+      - alert
+
+  - id: mrr-003
+    name: new_subscriptions_30d
+    description: Nuevas suscripciones en últimos 30 días
+    source: payments_db
+    query: "SELECT COUNT(*) FROM subscriptions WHERE created_at > NOW() - INTERVAL '30 days'"
+    threshold_warning: 0
+    threshold_critical: -1
+    severity: high
+
+  - id: mrr-004
+    name: churn_rate_30d
+    description: Tasa de cancelación en últimos 30 días
+    formula: "cancellations_30d / active_subscriptions * 100"
+    threshold_warning: 10
+    threshold_critical: 25
+    severity: critical
+    action_on_failure:
+      - log
+      - alert
+      - notify_founder
+      - trigger_retention_campaign
+
+  - id: mrr-005
+    name: failed_payments_30d
+    description: Pagos fallidos en últimos 30 días
+    source: payments_db
+    query: "SELECT COUNT(*) FROM payments WHERE status='failed' AND created_at > NOW() - INTERVAL '30 days'"
+    threshold_warning: 3
+    threshold_critical: 10
+    severity: high
+    action_on_failure:
+      - log
+      - alert
+      - notify_affected_customers
+
+  - id: mrr-006
+    name: avg_revenue_per_user
+    description: ARPU (Average Revenue Per User)
+    formula: "mrr / active_subscriptions"
+    threshold_warning: 500
+    threshold_critical: 100
+    severity: medium
+
+# ─── MÉTRICAS DE PRODUCTO ────────────────────────────────────
+
+product_metrics:
+  - id: mrr-007
+    name: active_agents_total
+    description: Total de agentes registrados y activos
+    source: atribucion_db
+    query: "SELECT COUNT(*) FROM agents WHERE active=true"
+    threshold_warning: 1
+    threshold_critical: 0
+    severity: high
+
+  - id: mrr-008
+    name: actions_per_day
+    description: Acciones registradas por día
+    source: certificates_db
+    query: "SELECT COUNT(*) FROM certificates WHERE created_at > NOW() - INTERVAL '1 day'"
+    threshold_warning: 10
+    threshold_critical: 0
+    severity: high
+    action_on_failure:
+      - log
+      - investigate_customer_usage
+
+  - id: mrr-009
+    name: inactive_tenants_30d
+    description: Tenants sin actividad en 30 días
+    source: atribucion_db
+    query: "SELECT COUNT(*) FROM tenants WHERE last_activity_at < NOW() - INTERVAL '30 days'"
+    threshold_warning: 5
+    threshold_critical: 20
+    severity: high
+    action_on_failure:
+      - log
+      - notify_affected_tenants
+      - trigger_onboarding_followup
+
+  - id: mrr-010
+    name: free_to_pro_conversion_rate
+    description: Tasa de conversión de Free a Pro
+    formula: "conversions_30d / free_tenants * 100"
+    threshold_warning: 2
+    threshold_critical: 0.5
+    severity: medium
+
+  - id: mrr-011
+    name: time_to_first_action
+    description: Tiempo medio desde registro hasta primera acción
+    source: analytics_db
+    query: "SELECT AVG(EXTRACT(EPOCH FROM first_action_at - created_at)/3600) FROM tenants"
+    threshold_warning: 48
+    threshold_critical: 168
+    severity: medium
+    unit: hours
+
+# ─── MÉTRICAS DE REPUTACIÓN ──────────────────────────────────
+
+reputation_metrics:
+  - id: mrr-012
+    name: agent_reputation_avg
+    description: Reputación promedio de todos los agentes
+    source: atribucion_db
+    query: "SELECT AVG(reputation) FROM agents"
+    threshold_warning: 500
+    threshold_critical: 100
+    severity: high
+
+  - id: mrr-013
+    name: revoked_agents_30d
+    description: Agentes revocados en últimos 30 días
+    source: atribucion_db
+    query: "SELECT COUNT(*) FROM agents WHERE revoked_at > NOW() - INTERVAL '30 days'"
+    threshold_warning: 3
+    threshold_critical: 10
+    severity: warning
+    action_on_failure:
+      - log
+      - investigate_revocations
+
+  - id: mrr-014
+    name: disputes_open
+    description: Disputas abiertas en tribunales
+    source: governance_db
+    query: "SELECT COUNT(*) FROM disputes WHERE status='open'"
+    threshold_warning: 5
+    threshold_critical: 20
+    severity: high
+
+  - id: mrr-015
+    name: compliance_violations_30d
+    description: Violaciones de compliance en últimos 30 días
+    source: audit_db
+    query: "SELECT COUNT(*) FROM compliance_violations WHERE created_at > NOW() - INTERVAL '30 days'"
+    threshold_warning: 0
+    threshold_critical: 1
+    severity: critical
+    action_on_failure:
+      - log
+      - alert_immediate
+      - notify_compliance_officer
+
+# ─── SEGMENTACIÓN DE CLIENTES ────────────────────────────────
+
+segments:
+  - name: power_users
+    description: Usuarios con >1000 acciones/mes
+    criteria: actions_monthly > 1000
+    action: personal_account_manager
+
+  - name: at_risk
+    description: Usuarios con caída >50% en uso
+    criteria: actions_monthly_delta < -50
+    action: retention_call
+
+  - name: dormant
+    description: Usuarios sin actividad 30+ días
+    criteria: last_activity_days > 30
+    action: re_engagement_email
+
+  - name: champions
+    description: Usuarios con NPS >9
+    criteria: nps >= 9
+    action: referral_program
+
+# ─── UMBRALES GENERALES ──────────────────────────────────────
+
+thresholds:
+  churn_rate_warning: 10
+  churn_rate_critical: 25
+  inactive_days_warning: 30
+  inactive_days_critical: 60
+  failed_payments_warning: 3
+  failed_payments_critical: 10
+  mrr_drop_percent_warning: 5
+  mrr_drop_percent_critical: 15
+  reputation_min_warning: 500
+  reputation_min_critical: 100
+
+# ─── ALERTAS POR NIVEL ───────────────────────────────────────
+
+alert_levels:
+  info:
+    channels: [log]
+    conditions:
+      - metric_age_hours > 24
+
+  warning:
+    channels: [log, email]
+    recipients: [ops@atribucion.io]
+    conditions:
+      - threshold_warning exceeded
+
+  critical:
+    channels: [log, email, slack, pagerduty]
+    recipients: [marco@atribucion.io, ops@atribucion.io]
+    conditions:
+      - threshold_critical exceeded
+      - compliance_violation
+
+# ─── ACCIONES AUTOMÁTICAS ────────────────────────────────────
+
+automatic_actions:
+  - name: trigger_retention_campaign
+    trigger: churn_rate > warning
+    action: send_email_to_at_risk
+    template: retention_offer
+
+  - name: notify_affected_customers
+    trigger: failed_payments > warning
+    action: send_payment_reminder
+    template: payment_failed
+
+  - name: trigger_onboarding_followup
+    trigger: inactive_tenants > warning
+    action: send_onboarding_email
+    template: onboarding_help
+
+  - name: personal_account_manager
+    trigger: segment == power_users
+    action: assign_manager
+    assign_to: marco@atribucion.io
+
+  - name: retention_call
+    trigger: segment == at_risk
+    action: schedule_call
+    within_hours: 24
+
+# ─── NOTIFICACIONES ──────────────────────────────────────────
+
+notifications:
+  - channel: log
+    level: info
+  - channel: email
+    to: [ops@atribucion.io]
+    only_on: [warning, critical]
+  - channel: slack
+    webhook: ${SLACK_WEBHOOK_OPS}
+    only_on: critical
+  - channel: pagerduty
+    only_on: critical
+
+# ─── MÉTRICAS DE MÉTRICAS ────────────────────────────────────
+
+meta_metrics:
+  - name: alerts_sent_total
+    type: counter
+    labels: [severity, channel]
+  - name: actions_triggered_total
+    type: counter
+    labels: [action_name]
+  - name: false_positives_total
+    type: counter
+  - name: mttr_seconds
+    type: histogram
+    description: Mean Time To Recovery
+
+# ─── RETENCIÓN ───────────────────────────────────────────────
+
+retention:
+  metrics_days: 730
+  alerts_days: 365
+  incidents_days: 1825
+
+# ─── CONFIGURACIÓN AVANZADA ──────────────────────────────────
+
+advanced:
+  max_workers: 4
+  timeout_seconds: 300
+  log_level: INFO
+  persist_state: true
+  state_file: ~/.atribucion/guards/mrr-state.json
+  enable_predictions: true
+  forecast_days: 30
+  use_ml_for_churn: false
+  notes: |
+    Roadmap: ML para predicción de churn en año 2.
+    Por ahora, heurísticas simples.
