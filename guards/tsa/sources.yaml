@@ -1,0 +1,259 @@
+# ─────────────────────────────────────────────────────────────
+# GUARDIÁN TSA — Fuentes de sellado de tiempo
+# ─────────────────────────────────────────────────────────────
+# Verifica integridad de sellos RFC 3161.
+# Detecta: duplicados, formato inválido, sellos vencidos,
+# autoridades caídas.
+# Cumple con: RFC 3161, eIDAS 2.0 Art. 41-42, NOM-151.
+# ─────────────────────────────────────────────────────────────
+
+guard: tsa
+version: 1.0.0
+interval_seconds: 600
+severity: critical
+
+# ─── AUTORIDADES DE SELLADO ──────────────────────────────────
+
+authorities:
+  - id: mock-tsa
+    name: Mock TSA
+    url: internal://mock
+    mode: mock
+    cost: free
+    sla_uptime: 100%
+    reliability: 100%
+    environments: [development, testing]
+    priority: 1
+    notes: |
+      Autoridad simulada para desarrollo. Genera tokens
+      determinísticos reproducibles. NO usar en producción.
+
+  - id: freetsa
+    name: FreeTSA
+    url: https://freetsa.org/tsr
+    mode: real
+    cost: free
+    sla_uptime: 99.5%
+    reliability: 95%
+    environments: [staging, production-low-risk]
+    priority: 2
+    timeout_seconds: 15
+    retry_max: 3
+    retry_delay_seconds: 5
+    notes: |
+      Autoridad pública gratuita. Suficiente para desarrollo
+      y producción de bajo riesgo. No reconocida por eIDAS.
+
+  - id: digicert
+    name: DigiCert TSA
+    url: http://timestamp.digicert.com
+    mode: real
+    cost: paid
+    cost_per_seal_eur: 0.001
+    sla_uptime: 99.99%
+    reliability: 99.9%
+    environments: [production, production-critical]
+    priority: 3
+    timeout_seconds: 20
+    retry_max: 3
+    retry_delay_seconds: 5
+    recognized_by:
+      - eIDAS (EU)
+      - NOM-151 (México) vía PSC
+      - ISO 27001
+    notes: |
+      Autoridad certificada. Reconocida legalmente en UE
+      y México. Requerida para clientes enterprise.
+
+  - id: seiko
+    name: Seiko TSA
+    url: https://tsa.seiko.co.jp
+    mode: real
+    cost: free
+    sla_uptime: 99.5%
+    reliability: 95%
+    environments: [staging, production-low-risk]
+    priority: 2
+    notes: Autoridad japonesa de respaldo.
+
+  - id: internal-tsa
+    name: TSA-Kronos
+    url: internal://tsa-kronos
+    mode: real
+    cost: internal
+    sla_uptime: 99.9%
+    reliability: 99.5%
+    environments: [production]
+    priority: 4
+    notes: |
+      Autoridad propia con firmas PQC. Requiere despliegue
+      de HSM resistente a cuántico. Roadmap: año 2.
+
+# ─── CONFIGURACIÓN POR ENTORNO ───────────────────────────────
+
+environments:
+  development:
+    primary: mock-tsa
+    fallbacks: []
+    require_redundancy: false
+
+  staging:
+    primary: freetsa
+    fallbacks: [seiko]
+    require_redundancy: false
+
+  production-low-risk:
+    primary: freetsa
+    fallbacks: [seiko, digicert]
+    require_redundancy: true
+
+  production:
+    primary: digicert
+    fallbacks: [freetsa, seiko]
+    require_redundancy: true
+
+  production-critical:
+    primary: digicert
+    fallbacks: [internal-tsa, freetsa]
+    require_redundancy: true
+    require_pqc: true
+
+# ─── VERIFICACIONES ──────────────────────────────────────────
+
+checks:
+  - id: tsa-001
+    name: format_validation
+    description: |
+      Verifica que cada token empiece con 0x y tenga 66 chars.
+    severity: warning
+    auto_auditable: true
+
+  - id: tsa-002
+    name: duplicate_detection
+    description: |
+      Detecta tokens duplicados en certificados distintos.
+      Un token único = timestamp único.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - freeze_certificate
+
+  - id: tsa-003
+    name: expiration_check
+    description: |
+      Verifica que los sellos no estén vencidos.
+      RFC 3161 recomienda validez máxima de 10 años.
+    severity: high
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - notify_operator
+
+  - id: tsa-004
+    name: authority_availability
+    description: |
+      Verifica que las autoridades primarias respondan.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - switch_to_fallback
+      - notify_operator
+
+  - id: tsa-005
+    name: timestamp_consistency
+    description: |
+      Verifica que el sealed_at coincida con el anchor timestamp
+      (±60 segundos de diferencia).
+    severity: warning
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - investigate
+
+  - id: tsa-006
+    name: certificate_chain
+    description: |
+      Verifica que el certificado de la TSA esté en la cadena
+      de confianza (CA raíz reconocida).
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - reject_seal
+
+# ─── UMBRALES ────────────────────────────────────────────────
+
+thresholds:
+  max_duplicates_per_run: 0
+  max_failures_before_fallback: 2
+  max_latency_ms_warning: 2000
+  max_latency_ms_critical: 5000
+  max_timestamp_drift_seconds: 60
+
+# ─── RUTAS ───────────────────────────────────────────────────
+
+paths:
+  certificates: ~/.atribucion/certificates.json
+  tsa_tokens: ~/.atribucion/tsa/tokens.jsonl
+  state: ~/.atribucion/guards/tsa-state.json
+  cache: ~/.atribucion/tsa/cache.json
+
+# ─── CACHE ───────────────────────────────────────────────────
+
+cache:
+  enabled: true
+  ttl_seconds: 3600
+  max_entries: 10000
+  persist: true
+
+# ─── NOTIFICACIONES ──────────────────────────────────────────
+
+notifications:
+  - channel: log
+    level: info
+  - channel: email
+    to: ops@atribucion.io
+    only_on: [warning, critical]
+  - channel: slack
+    webhook: ${SLACK_WEBHOOK_OPS}
+    only_on: critical
+
+# ─── MÉTRICAS ────────────────────────────────────────────────
+
+metrics:
+  - name: seals_total
+    type: counter
+    labels: [authority, mode]
+  - name: seals_failed_total
+    type: counter
+    labels: [authority, reason]
+  - name: seal_latency_ms
+    type: histogram
+    labels: [authority]
+  - name: authority_uptime
+    type: gauge
+    labels: [authority]
+  - name: fallback_activations_total
+    type: counter
+    labels: [from_authority, to_authority]
+
+# ─── RETENCIÓN ───────────────────────────────────────────────
+
+retention:
+  tokens_days: 3650
+  cache_days: 30
+  metrics_days: 365
+
+# ─── CONFIGURACIÓN AVANZADA ──────────────────────────────────
+
+advanced:
+  max_workers: 4
+  timeout_seconds: 60
+  log_level: INFO
+  persist_state: true
+  enable_pqc: true
+  pqc_algorithm: ML-DSA-65
