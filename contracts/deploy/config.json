@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "updated_at": "2026-10-06T00:00:00Z",
+  "networks": {
+    "sepolia": {
+      "chainId": 11155111,
+      "name": "Ethereum Sepolia",
+      "rpcEnv": "SEPOLIA_RPC_URL",
+      "keyEnv": "SEPOLIA_PRIVATE_KEY",
+      "explorer": "https://sepolia.etherscan.io",
+      "currency": "ETH-testnet",
+      "contracts": {
+        "AttributionRegistry": "",
+        "KAFRegistry": "",
+        "PaymentSplitter": ""
+      }
+    },
+    "mainnet": {
+      "chainId": 1,
+      "name": "Ethereum Mainnet",
+      "rpcEnv": "MAINNET_RPC_URL",
+      "keyEnv": "MAINNET_PRIVATE_KEY",
+      "explorer": "https://etherscan.io",
+      "currency": "ETH",
+      "contracts": {
+        "AttributionRegistry": "",
+        "KAFRegistry": "",
+        "PaymentSplitter": ""
+      }
+    },
+    "polygon": {
+      "chainId": 137,
+      "name": "Polygon PoS",
+      "rpcEnv": "POLYGON_RPC_URL",
+      "keyEnv": "POLYGON_PRIVATE_KEY",
+      "explorer": "https://polygonscan.com",
+      "currency": "MATIC",
+      "contracts": {}
+    },
+    "arbitrum": {
+      "chainId": 42161,
+      "name": "Arbitrum One",
+      "rpcEnv": "ARBITRUM_RPC_URL",
+      "keyEnv": "ARBITRUM_PRIVATE_KEY",
+      "explorer": "https://arbiscan.io",
+      "currency": "ETH",
+      "contracts": {}
+    }
+  },
+  "gas": {
+    "default_multiplier": 1.2,
+    "max_gwei_mainnet": 50,
+    "max_gwei_sepolia": 10,
+    "wait_confirmations_mainnet": 3,
+    "wait_confirmations_sepolia": 1
+  },
+  "verification": {
+    "auto_verify": true,
+    "etherscan_api_key_env": "ETHERSCAN_API_KEY",
+    "polygonscan_api_key_env": "POLYGONSCAN_API_KEY"
+  },
+  "deployment_order": [
+    "AttributionRegistry",
+    "KAFRegistry",
+    "PaymentSplitter"
+  ]
+}
