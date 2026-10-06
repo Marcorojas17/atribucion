@@ -1,0 +1,388 @@
+# ─────────────────────────────────────────────────────────────
+# GUARDIÁN VAULT — Protección de secretos
+# ─────────────────────────────────────────────────────────────
+# Detecta claves privadas expuestas, permisos inseguros,
+# secretos en git history, .env públicos.
+# Cumple con: ISO 27001 A.9, OWASP ASVS V6, NIST 800-57.
+# ─────────────────────────────────────────────────────────────
+
+guard: vault
+version: 1.0.0
+interval_seconds: 3600
+severity: critical
+
+# ─── PATRONES DE SECRETOS ────────────────────────────────────
+# Cada patrón identifica un tipo de secreto por regex.
+
+secret_patterns:
+  - id: vault-001
+    name: ethereum_private_key
+    description: Clave privada Ethereum (64 hex)
+    regex: "0x[a-fA-F0-9]{64}"
+    severity: critical
+    tags: [blockchain, private_key]
+    action:
+      - log
+      - alert_immediate
+      - notify_security_team
+      - rotate_key
+
+  - id: vault-002
+    name: ethereum_private_key_no_prefix
+    description: Clave privada Ethereum sin 0x (64 hex)
+    regex: "(?<!0x)\\b[a-fA-F0-9]{64}\\b"
+    severity: critical
+    tags: [blockchain, private_key]
+    action:
+      - log
+      - alert_immediate
+      - notify_security_team
+
+  - id: vault-003
+    name: stripe_live_key
+    description: Stripe live secret key
+    regex: "sk_live_[a-zA-Z0-9]{24,}"
+    severity: critical
+    tags: [payments, stripe]
+    action:
+      - log
+      - alert_immediate
+      - rotate_key
+
+  - id: vault-004
+    name: stripe_restricted_key
+    description: Stripe restricted key
+    regex: "rk_live_[a-zA-Z0-9]{24,}"
+    severity: high
+    tags: [payments, stripe]
+
+  - id: vault-005
+    name: aws_access_key
+    description: AWS Access Key ID
+    regex: "AKIA[0-9A-Z]{16}"
+    severity: critical
+    tags: [aws]
+    action:
+      - log
+      - alert_immediate
+      - rotate_key
+
+  - id: vault-006
+    name: aws_secret_key
+    description: AWS Secret Access Key
+    regex: "(?i)aws_secret_access_key\\s*=\\s*[A-Za-z0-9/+=]{40}"
+    severity: critical
+    tags: [aws]
+
+  - id: vault-007
+    name: github_pat
+    description: GitHub Personal Access Token
+    regex: "ghp_[a-zA-Z0-9]{36}"
+    severity: critical
+    tags: [github]
+    action:
+      - log
+      - alert_immediate
+      - revoke_token
+
+  - id: vault-008
+    name: github_oauth
+    description: GitHub OAuth token
+    regex: "gho_[a-zA-Z0-9]{36}"
+    severity: critical
+    tags: [github]
+
+  - id: vault-009
+    name: openai_api_key
+    description: OpenAI API key
+    regex: "sk-[a-zA-Z0-9]{48}"
+    severity: high
+    tags: [openai, ai]
+
+  - id: vault-010
+    name: anthropic_api_key
+    description: Anthropic API key
+    regex: "sk-ant-[a-zA-Z0-9_-]{95,}"
+    severity: high
+    tags: [anthropic, ai]
+
+  - id: vault-011
+    name: google_api_key
+    description: Google API key
+    regex: "AIza[0-9A-Za-z_-]{35}"
+    severity: high
+    tags: [google]
+
+  - id: vault-012
+    name: mercadopago_token
+    description: Mercado Pago access token
+    regex: "(?i)mercadopago[_\\-]?(access[_\\-]?)?token\\s*[:=]\\s*[A-Za-z0-9-_.]{20,}"
+    severity: critical
+    tags: [mercadopago, payments]
+
+  - id: vault-013
+    name: slack_webhook
+    description: Slack webhook URL
+    regex: "https://hooks\\.slack\\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[A-Za-z0-9]+"
+    severity: high
+    tags: [slack]
+
+  - id: vault-014
+    name: pagerduty_key
+    description: PagerDuty integration key
+    regex: "(?i)pagerduty.*[a-zA-Z0-9]{32}"
+    severity: high
+    tags: [pagerduty]
+
+  - id: vault-015
+    name: generic_password
+    description: Password hardcoded
+    regex: "(?i)(password|passwd|pwd)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]"
+    severity: high
+    tags: [password]
+
+  - id: vault-016
+    name: generic_secret
+    description: Generic secret/token
+    regex: "(?i)(secret|token|api_key|apikey)\\s*[:=]\\s*['\"][a-zA-Z0-9]{16,}['\"]"
+    severity: medium
+    tags: [generic]
+
+  - id: vault-017
+    name: jwt_token
+    description: JWT hardcoded
+    regex: "eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+"
+    severity: high
+    tags: [jwt]
+
+  - id: vault-018
+    name: rsa_private_key
+    description: RSA private key PEM
+    regex: "-----BEGIN RSA PRIVATE KEY-----"
+    severity: critical
+    tags: [private_key, rsa]
+
+  - id: vault-019
+    name: ec_private_key
+    description: EC private key PEM
+    regex: "-----BEGIN EC PRIVATE KEY-----"
+    severity: critical
+    tags: [private_key, ecdsa]
+
+  - id: vault-020
+    name: openssh_private_key
+    description: OpenSSH private key
+    regex: "-----BEGIN OPENSSH PRIVATE KEY-----"
+    severity: critical
+    tags: [private_key, ssh]
+
+# ─── ARCHIVOS Y DIRECTORIOS A ESCANEAR ───────────────────────
+
+scan_targets:
+  - id: atribucion_config
+    path: ~/.atribucion/
+    recursive: true
+    extensions: [.json, .yaml, .yml, .env, .txt, .md]
+    exclude:
+      - "*.log"
+      - "cache/*"
+      - "backups/*"
+
+  - id: project_root
+    path: ~/atribucion/
+    recursive: true
+    extensions: [.py, .js, .ts, .json, .yaml, .yml, .md, .env]
+    exclude:
+      - ".venv/*"
+      - "node_modules/*"
+      - "__pycache__/*"
+      - ".git/*"
+      - "dist/*"
+
+  - id: public_directories
+    paths:
+      - /tmp/
+      - /var/www/
+      - /var/tmp/
+    recursive: true
+    extensions: [.env, .json, .key, .pem]
+    severity_override: critical
+    notes: |
+      Secretos en directorios públicos son exposición
+      inmediata. Escaneo cada 15 min.
+
+  - id: home_directory
+    path: ~/
+    recursive: false
+    extensions: [.env, .key, .pem, .p12]
+    exclude:
+      - ".cache/*"
+      - ".npm/*"
+      - ".venv/*"
+
+# ─── VERIFICACIÓN DE PERMISOS ────────────────────────────────
+
+permissions_check:
+  - path: ~/.atribucion/.env
+    max_mode: "0600"
+    owner_required: true
+    severity: critical
+
+  - path: ~/.atribucion/
+    max_mode: "0700"
+    owner_required: true
+    severity: high
+
+  - path: ~/.ssh/
+    max_mode: "0700"
+    severity: high
+
+  - path: ~/.ssh/id_rsa
+    max_mode: "0600"
+    severity: critical
+
+  - path: ~/.ssh/id_ed25519
+    max_mode: "0600"
+    severity: critical
+
+  - path: ~/atribucion/.env
+    max_mode: "0600"
+    severity: critical
+
+# ─── GIT HISTORY ─────────────────────────────────────────────
+
+git_history_check:
+  enabled: true
+  repo_path: ~/atribucion
+  scan_commits: all
+  scan_patterns: true
+  severity: critical
+  notes: |
+    Escanea el historial de git buscando secretos
+    que hayan sido commiteados por error.
+
+  ignore_paths:
+    - "*.example"
+    - "*.template"
+    - ".env.example"
+    - "docs/*"
+
+# ─── ROTACIÓN DE CLAVES ──────────────────────────────────────
+
+key_rotation:
+  enabled: true
+  policies:
+    - name: ethereum_wallet
+      max_age_days: 365
+      action: notify_only
+
+    - name: api_keys
+      max_age_days: 90
+      action: auto_rotate
+
+    - name: hsm_keys
+      max_age_days: 365
+      action: manual_rotate_required
+
+    - name: jwt_secrets
+      max_age_days: 30
+      action: auto_rotate
+
+  check_interval_hours: 24
+
+# ─── VAULT / KMS ─────────────────────────────────────────────
+
+vault_integration:
+  enabled: false
+  providers:
+    - name: aws_kms
+      enabled: false
+    - name: azure_keyvault
+      enabled: false
+    - name: hashicorp_vault
+      enabled: false
+    - name: hsm_local
+      enabled: true
+      type: yubihsm
+
+  notes: |
+    Roadmap: integración con HashiCorp Vault y AWS KMS
+    para clientes enterprise.
+
+# ─── ACCIONES ────────────────────────────────────────────────
+
+actions:
+  alert_immediate:
+    channels: [email, slack, pagerduty]
+    recipients: [security@atribucion.io, marco@atribucion.io]
+    escalate_after_minutes: 15
+
+  notify_security_team:
+    channels: [email, slack]
+    recipients: [security@atribucion.io]
+
+  rotate_key:
+    auto: true
+    notify_owner: true
+    backup_old_key: false
+    reason_logged: true
+
+  revoke_token:
+    auto: true
+    api_call: true
+    notify_owner: true
+
+# ─── NOTIFICACIONES ──────────────────────────────────────────
+
+notifications:
+  - channel: log
+    level: info
+  - channel: email
+    to: security@atribucion.io
+    only_on: [high, critical]
+  - channel: slack
+    webhook: ${SLACK_WEBHOOK_SECURITY}
+    only_on: critical
+  - channel: pagerduty
+    only_on: critical
+
+# ─── MÉTRICAS ────────────────────────────────────────────────
+
+metrics:
+  - name: scans_total
+    type: counter
+  - name: secrets_found_total
+    type: counter
+    labels: [pattern_id, severity]
+  - name: files_scanned_total
+    type: counter
+  - name: permission_violations_total
+    type: counter
+    labels: [path]
+  - name: git_history_secrets_total
+    type: counter
+  - name: keys_rotated_total
+    type: counter
+    labels: [key_type]
+  - name: scan_duration_seconds
+    type: histogram
+
+# ─── RETENCIÓN ───────────────────────────────────────────────
+
+retention:
+  scan_logs_days: 365
+  incidents_days: 1825
+  metrics_days: 365
+
+# ─── CONFIGURACIÓN AVANZADA ──────────────────────────────────
+
+advanced:
+  max_workers: 4
+  timeout_seconds: 300
+  log_level: INFO
+  persist_state: true
+  state_file: ~/.atribucion/guards/vault-state.json
+  exclude_binary_files: true
+  max_file_size_mb: 10
+  entropy_analysis: true
+  whitelist_ips: []
