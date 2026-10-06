@@ -1,0 +1,213 @@
+# ─────────────────────────────────────────────────────────────
+# GUARDIÁN ACTA — Políticas de auditoría
+# ─────────────────────────────────────────────────────────────
+# Audita logs de acceso. Detecta: bruteforce, accesos fuera
+# de horario, patrones anómalos, gaps en logs.
+# Cumple con EU AI Act Art. 12 (registro de eventos).
+# ─────────────────────────────────────────────────────────────
+
+guard: acta
+version: 1.0.0
+interval_seconds: 300
+severity: high
+
+# ─── QUÉ MONITOREA ───────────────────────────────────────────
+
+sources:
+  - id: access
+    path: ~/.atribucion/logs/access.jsonl
+    description: Cada request HTTP al API
+    retention_days: 365
+
+  - id: errors
+    path: ~/.atribucion/logs/errors.jsonl
+    description: Errores 4xx y 5xx
+    retention_days: 365
+
+  - id: auth
+    path: ~/.atribucion/logs/auth.jsonl
+    description: Intentos de autenticación
+    retention_days: 730
+
+  - id: admin
+    path: ~/.atribucion/logs/admin.jsonl
+    description: Acciones administrativas
+    retention_days: 1825
+
+# ─── DETECCIONES ─────────────────────────────────────────────
+
+detections:
+  - id: acta-001
+    name: requests_per_ip_warning
+    description: |
+      IP con más de 100 requests en ventana de 5 min.
+      Posible scraping o scraping agresivo.
+    condition: requests_per_ip > 100 in 5min
+    severity: warning
+    action:
+      - log
+      - add_to_watchlist
+
+  - id: acta-002
+    name: requests_per_ip_critical
+    description: |
+      IP con más de 500 requests en ventana de 5 min.
+      Posible ataque DoS o bruteforce.
+    condition: requests_per_ip > 500 in 5min
+    severity: critical
+    action:
+      - log
+      - add_to_watchlist
+      - block_ip
+      - notify_security_team
+
+  - id: acta-003
+    name: off_hours_access
+    description: |
+      Más del 30% de accesos en horario 2am-5am (UTC-6).
+      Anómalo para clientes B2B europeos.
+    condition: off_hours_percentage > 30
+    severity: warning
+    action:
+      - log
+      - notify_operator
+
+  - id: acta-004
+    name: auth_failures_burst
+    description: |
+      Más de 20 fallos de autenticación desde la misma IP
+      en 5 minutos. Posible bruteforce.
+    condition: auth_failures_per_ip > 20 in 5min
+    severity: critical
+    action:
+      - log
+      - block_ip
+      - notify_security_team
+
+  - id: acta-005
+    name: log_gap
+    description: |
+      Gap mayor a 1 hora sin requests registrados.
+      Puede indicar caída del sistema o manipulación de logs.
+    condition: log_gap_seconds > 3600
+    severity: warning
+    action:
+      - log
+      - verify_system_health
+
+  - id: acta-006
+    name: admin_action_anomaly
+    description: |
+      Acción administrativa desde IP no reconocida.
+      Requiere confirmación del operador.
+    condition: admin_action AND ip NOT IN trusted_ips
+    severity: critical
+    action:
+      - log
+      - require_operator_confirmation
+      - notify_security_team
+
+  - id: acta-007
+    name: deleted_admin_logs
+    description: |
+      Detecta si faltan entradas en logs admin.
+      Indicador de manipulación.
+    condition: admin_log_sequence_broken == true
+    severity: critical
+    action:
+      - log
+      - alert_immediate
+      - freeze_admin_access
+
+# ─── IPs CONFIABLES ──────────────────────────────────────────
+
+trusted_ips:
+  - 127.0.0.1
+  - ::1
+  - ${OFFICE_IP_1}
+  - ${OFFICE_IP_2}
+
+# ─── HORARIOS ────────────────────────────────────────────────
+
+business_hours:
+  timezone: America/Mexico_City
+  start_hour: 6
+  end_hour: 22
+  days: [1, 2, 3, 4, 5]  # Lun-Vie
+
+# ─── UMBRALES ────────────────────────────────────────────────
+
+thresholds:
+  requests_per_ip_warning: 100
+  requests_per_ip_critical: 500
+  auth_failures_warning: 10
+  auth_failures_critical: 20
+  off_hours_percentage: 30
+  gap_tolerance_seconds: 3600
+  anomaly_score_threshold: 0.8
+
+# ─── ACCIONES ────────────────────────────────────────────────
+
+actions:
+  block_ip:
+    duration_minutes: 60
+    whitelist: true
+    notify: true
+
+  add_to_watchlist:
+    duration_hours: 24
+    escalate_on_repeat: true
+
+  freeze_admin_access:
+    duration_hours: 24
+    require_manual_unlock: true
+
+# ─── NOTIFICACIONES ──────────────────────────────────────────
+
+notifications:
+  - channel: log
+    level: info
+  - channel: email
+    to: ops@atribucion.io
+    only_on: [warning, critical]
+  - channel: slack
+    webhook: ${SLACK_WEBHOOK_OPS}
+    only_on: critical
+  - channel: pagerduty
+    only_on: critical
+    severity_filter: critical
+
+# ─── MÉTRICAS ────────────────────────────────────────────────
+
+metrics:
+  - name: requests_total
+    type: counter
+    labels: [method, path, status]
+  - name: requests_per_ip
+    type: gauge
+  - name: auth_failures_total
+    type: counter
+    labels: [ip, reason]
+  - name: anomaly_score
+    type: gauge
+  - name: log_gap_seconds
+    type: histogram
+
+# ─── RETENCIÓN ───────────────────────────────────────────────
+
+retention:
+  access_logs_days: 365
+  error_logs_days: 365
+  auth_logs_days: 730
+  admin_logs_days: 1825
+  compliance_evidence_days: 3650
+
+# ─── CONFIGURACIÓN AVANZADA ──────────────────────────────────
+
+advanced:
+  batch_size: 1000
+  max_workers: 4
+  timeout_seconds: 120
+  log_level: INFO
+  persist_state: true
+  state_file: ~/.atribucion/guards/acta-state.json
