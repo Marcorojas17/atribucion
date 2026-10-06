@@ -1,0 +1,402 @@
+# ─────────────────────────────────────────────────────────────
+# GUARDIÁN ORACLE — Consistencia de datos y fuentes de verdad
+# ─────────────────────────────────────────────────────────────
+# Verifica coherencia entre certificados, agentes, contratos y DIDs.
+# Detecta: DIDs inválidos, certificados huérfanos, contratos sin
+# firmar, discrepancias entre fuentes.
+# Filosofía: la verdad es una sola. Si hay dos, hay un problema.
+# ─────────────────────────────────────────────────────────────
+
+guard: oracle
+version: 1.0.0
+interval_seconds: 600
+severity: high
+
+# ─── FUENTES DE VERDAD ───────────────────────────────────────
+
+sources:
+  - id: agents_db
+    name: Base de datos de agentes
+    type: sqlite
+    path: ~/.atribucion/agents.db
+    table: agents
+    primary_key: agent_id
+    critical: true
+
+  - id: certificates_db
+    name: Base de datos de certificados
+    type: sqlite
+    path: ~/.atribucion/certificates.db
+    table: certificates
+    primary_key: certificate_id
+    critical: true
+
+  - id: contracts_db
+    name: Base de datos de contratos
+    type: sqlite
+    path: ~/.atribucion/contracts.db
+    table: contracts
+    primary_key: contract_id
+    critical: true
+
+  - id: anchors_chain
+    name: Cadena de anclajes Ethereum
+    type: jsonl
+    path: ~/.atribucion/anchors.jsonl
+    critical: true
+
+  - id: did_documents
+    name: DID Documents públicos
+    type: http
+    url_template: "https://api.atribucion.io/v1/dids/{did}"
+    timeout_seconds: 5
+    critical: false
+    cache_ttl_seconds: 3600
+
+# ─── VERIFICACIONES DE CONSISTENCIA ──────────────────────────
+
+checks:
+  - id: oracle-001
+    name: did_format_validation
+    description: |
+      Verifica que cada DID cumpla el formato:
+      did:kronos:<tipo>:0x<40_hex>
+    severity: warning
+    auto_auditable: true
+    scope: [agents_db, certificates_db, contracts_db]
+    action_on_failure:
+      - log
+      - notify_operator
+      - quarantine_record
+
+  - id: oracle-002
+    name: did_type_consistency
+    description: |
+      Verifica que el tipo del DID coincida con el tipo de
+      entidad (agent, human, robot, org).
+    severity: warning
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - notify_operator
+
+  - id: oracle-003
+    name: certificate_orphan_detection
+    description: |
+      Detecta certificados cuyo agent_did no existe en agents_db.
+      Certificado huérfano = inconsistencia grave.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - quarantine_certificate
+      - notify_security_team
+
+  - id: oracle-004
+    name: contract_signature_completeness
+    description: |
+      Verifica que cada contrato tenga las 3 firmas:
+      agente, creador, operador.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - invalidate_contract
+
+  - id: oracle-005
+    name: contract_hash_match
+    description: |
+      Recalcula el hash del contrato y lo compara con el
+      registrado. Detecta manipulación post-firma.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - freeze_agent
+      - notify_security_team
+
+  - id: oracle-006
+    name: certificate_anchor_match
+    description: |
+      Verifica que cada certificado tenga su Merkle root
+      en anchors_chain.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - re_anchor
+
+  - id: oracle-007
+    name: agent_colateral_sufficiency
+    description: |
+      Verifica que cada agente tenga colateral suficiente
+      según su nivel de autonomía.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - suspend_agent
+
+  - id: oracle-008
+    name: agent_autonomy_consistency
+    description: |
+      Verifica que el nivel de autonomía declarado en el
+      contrato coincida con el nivel en agent_db.
+    severity: high
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - notify_operator
+
+  - id: oracle-009
+    name: did_document_published
+    description: |
+      Verifica que el DID Document esté publicado y sea
+      accesible vía HTTP.
+    severity: warning
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - notify_operator
+      - retry_publish
+
+  - id: oracle-010
+    name: certificate_issuance_chain
+    description: |
+      Verifica que la cadena de emisión sea consistente:
+      agente → contrato → certificado → anclaje.
+    severity: critical
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+
+  - id: oracle-011
+    name: reputation_consistency
+    description: |
+      Verifica que la reputación del agente sea consistente
+      con su historial de acciones y disputas.
+    severity: medium
+    auto_auditable: true
+
+  - id: oracle-012
+    name: timestamp_monotonicity
+    description: |
+      Verifica que los timestamps de eventos sean monótonos
+      (cada evento posterior al anterior).
+    severity: high
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - alert
+      - investigate_clock_drift
+
+  - id: oracle-013
+    name: ipfs_content_availability
+    description: |
+      Verifica que el contenido de cada certificado esté
+      disponible en IPFS.
+    severity: high
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - re_pin_to_ipfs
+
+  - id: oracle-014
+    name: arweave_permanence
+    description: |
+      Verifica que el contenido crítico esté archivado
+      en Arweave (permanencia 10+ años).
+    severity: medium
+    auto_auditable: true
+    action_on_failure:
+      - log
+      - re_archive
+
+# ─── REGLAS DE CONSISTENCIA ──────────────────────────────────
+
+consistency_rules:
+  - id: rule-001
+    name: every_certificate_has_agent
+    description: "∀ certificado, ∃ agente"
+    query: |
+      SELECT c.certificate_id
+      FROM certificates c
+      LEFT JOIN agents a ON c.agent_did = a.agent_did
+      WHERE a.agent_did IS NULL
+
+  - id: rule-002
+    name: every_agent_has_contract
+    description: "∀ agente, ∃ contrato firmado"
+    query: |
+      SELECT a.agent_id
+      FROM agents a
+      LEFT JOIN contracts c ON a.agent_did = c.agent_did
+      WHERE c.contract_id IS NULL
+
+  - id: rule-003
+    name: every_contract_has_three_signatures
+    description: "∀ contrato, 3 firmas (agente + creador + operador)"
+    query: |
+      SELECT contract_id
+      FROM contracts
+      WHERE (signature_agent IS NULL
+          OR signature_creator IS NULL
+          OR signature_operator IS NULL)
+
+  - id: rule-004
+    name: every_certificate_anchored
+    description: "∀ certificado, ∃ anchor en Ethereum"
+    query: |
+      SELECT c.certificate_id
+      FROM certificates c
+      LEFT JOIN anchors a ON c.merkle_root = a.merkle_root
+      WHERE a.merkle_root IS NULL
+        AND c.created_at < NOW() - INTERVAL '6 hours'
+
+  - id: rule-005
+    name: no_duplicate_dids
+    description: "No debe haber DIDs duplicados con metadata distinta"
+    query: |
+      SELECT agent_did, COUNT(DISTINCT metadata_hash) as variants
+      FROM agents
+      GROUP BY agent_did
+      HAVING variants > 1
+
+  - id: rule-006
+    name: timestamps_ordered
+    description: "Los timestamps deben ser estrictamente crecientes por agente"
+    query: |
+      SELECT agent_did, MAX(created_at) as latest
+      FROM certificates
+      GROUP BY agent_did
+      HAVING latest > NOW() + INTERVAL '5 minutes'
+
+# ─── UMBRALES ────────────────────────────────────────────────
+
+thresholds:
+  max_invalid_dids_per_run: 0
+  max_orphan_certificates_per_run: 0
+  max_contracts_without_signature: 0
+  max_unanchored_certificates: 100
+  max_timestamp_drift_seconds: 300
+  max_ipfs_unavailable_percent: 5
+  consistency_check_timeout_seconds: 120
+
+# ─── CUARENTENA ──────────────────────────────────────────────
+
+quarantine:
+  enabled: true
+  path: ~/.atribucion/quarantine/
+  retention_days: 90
+  notify_on_quarantine: true
+  require_manual_review: true
+
+# ─── ACCIONES ────────────────────────────────────────────────
+
+actions:
+  quarantine_record:
+    move_to: quarantine_dir
+    disable_in_main_db: true
+    notify_owner: true
+
+  quarantine_certificate:
+    mark_as_invalid: true
+    notify_affected_tenants: true
+
+  invalidate_contract:
+    mark_as_invalid: true
+    suspend_agent: true
+    notify_all_parties: true
+
+  freeze_agent:
+    set_active_false: true
+    require_manual_unfreeze: true
+    notify_owner: true
+
+  suspend_agent:
+    set_suspended_true: true
+    duration_hours: 24
+    auto_resume: false
+
+  re_anchor:
+    schedule_immediate: true
+    max_retries: 3
+
+  re_pin_to_ipfs:
+    schedule_immediate: true
+    max_retries: 3
+
+  re_archive:
+    schedule_immediate: true
+    target: arweave
+
+  retry_publish:
+    schedule_immediate: true
+    max_retries: 5
+    backoff_seconds: 60
+
+# ─── NOTIFICACIONES ──────────────────────────────────────────
+
+notifications:
+  - channel: log
+    level: info
+  - channel: email
+    to: ops@atribucion.io
+    only_on: [warning, critical]
+  - channel: slack
+    webhook: ${SLACK_WEBHOOK_OPS}
+    only_on: critical
+  - channel: pagerduty
+    only_on: critical
+  - channel: email
+    to: security@atribucion.io
+    only_on: critical
+    filter: [oracle-003, oracle-005]
+
+# ─── MÉTRICAS ────────────────────────────────────────────────
+
+metrics:
+  - name: consistency_checks_total
+    type: counter
+    labels: [check_id, status]
+  - name: inconsistencies_found_total
+    type: counter
+    labels: [rule_id, severity]
+  - name: quarantined_records_total
+    type: counter
+    labels: [entity_type]
+  - name: check_duration_seconds
+    type: histogram
+    labels: [check_id]
+  - name: consistency_score
+    type: gauge
+    description: "Score 0-100 de consistencia global"
+
+# ─── RETENCIÓN ───────────────────────────────────────────────
+
+retention:
+  check_logs_days: 365
+  incidents_days: 1825
+  quarantine_days: 90
+  metrics_days: 365
+
+# ─── CONFIGURACIÓN AVANZADA ──────────────────────────────────
+
+advanced:
+  max_workers: 4
+  timeout_seconds: 300
+  log_level: INFO
+  persist_state: true
+  state_file: ~/.atribucion/guards/oracle-state.json
+  enable_parallel_checks: true
+  enable_graph_analysis: true
+  graph_analysis:
+    detect_cycles: true
+    detect_orphans: true
+    detect_duplicates: true
