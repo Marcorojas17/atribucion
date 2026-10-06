@@ -1,0 +1,240 @@
+# ─────────────────────────────────────────────────────────────
+# GUARDIÁN PHOENIX — Resiliencia y auto-recuperación
+# ─────────────────────────────────────────────────────────────
+# Verifica salud del sistema y recupera automáticamente.
+# Detecta: API caída, backlog de anclajes, fallos repetidos,
+# degradación de performance.
+# Filosofía: ningún nodo es crítico. Si cae, otro lo reemplaza.
+# ─────────────────────────────────────────────────────────────
+
+guard: phoenix
+version: 1.0.0
+interval_seconds: 180
+severity: critical
+
+# ─── HEALTH CHECKS ───────────────────────────────────────────
+
+health_checks:
+  - id: phx-001
+    name: api_health
+    description: |
+      Verifica que el endpoint /v1/health responda 200.
+      Si falla 3 veces seguidas, escala.
+    url: ${API_URL:-http://localhost:8000}/v1/health
+    method: GET
+    timeout_seconds: 5
+    expected_status: 200
+    expected_body_contains: "ok"
+    severity: critical
+    retry_max: 3
+    retry_delay_seconds: 10
+    action_on_failure:
+      - log
+      - alert
+      - attempt_restart
+
+  - id: phx-002
+    name: database_health
+    description: |
+      Verifica conectividad con base de datos.
+    type: database
+    driver: sqlite
+    path: ~/.atribucion/atribucion.db
+    timeout_seconds: 3
+    severity: critical
+    action_on_failure:
+      - log
+      - alert
+      - switch_to_readonly
+
+  - id: phx-003
+    name: ethereum_rpc_health
+    description: |
+      Verifica conectividad con RPC de Ethereum.
+    url: ${SEPOLIA_RPC_URL:-https://rpc.sepolia.org}
+    method: POST
+    body: '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+    timeout_seconds: 8
+    expected_status: 200
+    severity: high
+    action_on_failure:
+      - log
+      - switch_to_fallback_rpc
+
+  - id: phx-004
+    name: pending_anchors
+    description: |
+      Verifica backlog de anclajes pendientes.
+      Backlog alto indica problema con Ethereum o con el batching.
+    type: file_lines
+    path: ~/.atribucion/pending_anchors.jsonl
+    threshold_warning: 100
+    threshold_critical: 1000
+    severity: high
+    action_on_failure:
+      - log
+      - alert
+      - force_batch_anchor
+
+  - id: phx-005
+    name: certificate_emission_rate
+    description: |
+      Verifica que la tasa de emisión no haya caído a 0.
+      Caída súbita indica problema con el flujo.
+    type: metric_delta
+    metric: certificates_total
+    window_minutes: 15
+    threshold_warning: 1
+    threshold_critical: 0
+    severity: warning
+    action_on_failure:
+      - log
+      - investigate
+
+  - id: phx-006
+    name: memory_usage
+    description: |
+      Verifica uso de memoria del proceso.
+    type: system
+    metric: memory_percent
+    threshold_warning: 75
+    threshold_critical: 90
+    severity: warning
+    action_on_failure:
+      - log
+      - alert
+      - restart_if_critical
+
+  - id: phx-007
+    name: disk_usage
+    description: |
+      Verifica uso de disco.
+    type: system
+    metric: disk_percent
+    path: ~/.atribucion
+    threshold_warning: 80
+    threshold_critical: 95
+    severity: high
+    action_on_failure:
+      - log
+      - alert
+      - cleanup_old_logs
+
+# ─── RECOVERY ────────────────────────────────────────────────
+
+recovery:
+  auto_restart: true
+  restart_command: "systemctl restart atribucion-api"
+  restart_timeout_seconds: 30
+  max_restarts_per_hour: 3
+  escalate_after_restarts: 3
+
+  fallback_rpcs:
+    - https://rpc.sepolia.org
+    - https://ethereum-sepolia.publicnode.com
+    - https://sepolia.gateway.tenderly.co
+
+  cleanup:
+    old_logs_days: 30
+    old_cache_days: 7
+    old_certs_backup_days: 90
+
+# ─── BATCH ANCHORING ─────────────────────────────────────────
+
+batching:
+  enabled: true
+  interval_seconds: 21600  # 6 horas
+  force_batch_on_threshold: 1000
+  force_batch_on_backlog_age_hours: 12
+
+# ─── ESCALATION ──────────────────────────────────────────────
+
+escalation:
+  levels:
+    - level: 1
+      trigger: 1 failure
+      action: log_and_retry
+
+    - level: 2
+      trigger: 3 consecutive failures
+      action: attempt_restart
+
+    - level: 3
+      trigger: 3 restarts in 1 hour
+      action: notify_oncall
+
+    - level: 4
+      trigger: 10 restarts in 6 hours
+      action: page_emergency_contact
+
+  contacts:
+    - level: 3
+      email: oncall@atribucion.io
+      slack: "@oncall"
+    - level: 4
+      email: marco@atribucion.io
+      phone: ${EMERGENCY_PHONE}
+      slack: "@marco @oncall"
+
+# ─── NOTIFICACIONES ──────────────────────────────────────────
+
+notifications:
+  - channel: log
+    level: info
+  - channel: email
+    to: ops@atribucion.io
+    only_on: [warning, critical]
+  - channel: slack
+    webhook: ${SLACK_WEBHOOK_OPS}
+    only_on: critical
+  - channel: pagerduty
+    only_on: critical
+    severity_filter: critical
+
+# ─── MÉTRICAS ────────────────────────────────────────────────
+
+metrics:
+  - name: health_check_duration_ms
+    type: histogram
+    labels: [check_id]
+  - name: health_check_status
+    type: gauge
+    labels: [check_id]
+  - name: restarts_total
+    type: counter
+    labels: [reason]
+  - name: escalations_total
+    type: counter
+    labels: [level]
+  - name: pending_anchors_count
+    type: gauge
+  - name: uptime_seconds
+    type: counter
+
+# ─── SLA ─────────────────────────────────────────────────────
+
+sla:
+  free: no_sla
+  pro: 99.5
+  bank: 99.99
+  measurement_window_days: 30
+  compensation:
+    enabled: true
+    percentage_per_0_1_below: 5
+
+# ─── RETENCIÓN ───────────────────────────────────────────────
+
+retention:
+  health_logs_days: 90
+  incident_logs_days: 365
+  metrics_days: 365
+
+# ─── CONFIGURACIÓN AVANZADA ──────────────────────────────────
+
+advanced:
+  max_workers: 4
+  timeout_seconds: 60
+  log_level: INFO
+  persist_state: true
+  state_file: ~/.atribucion/guards/phoenix-state.json
+  enable_auto_recovery: true
