@@ -1,0 +1,379 @@
+# ─────────────────────────────────────────────────────────────
+# GUARDIÁN SENTINEL — Perímetro de seguridad
+# ─────────────────────────────────────────────────────────────
+# Detección de ataques: bruteforce, fuzzing, SQL injection,
+# XSS, path traversal, command injection, SSRF, rate abuse.
+# Cumple con: OWASP Top 10, OWASP API Security Top 10,
+# NIST 800-53 SI-4, ISO 27001 A.12.2.
+# ─────────────────────────────────────────────────────────────
+
+guard: sentinel
+version: 1.0.0
+interval_seconds: 120
+severity: critical
+
+# ─── ATAQUES DETECTADOS ──────────────────────────────────────
+
+detections:
+  # ─── AUTENTICACIÓN ─────────────────────────────────────────
+  - id: sen-001
+    name: auth_bruteforce
+    description: |
+      Múltiples intentos fallidos de autenticación desde
+      la misma IP. Posible bruteforce.
+    condition: errors_401_per_ip > 20 in 5min
+    severity: critical
+    action:
+      - log
+      - block_ip
+      - notify_security_team
+
+  - id: sen-002
+    name: auth_credential_stuffing
+    description: |
+      Muchos usuarios distintos con pocas requests cada uno.
+      Patrón típico de credential stuffing.
+    condition: unique_usernames_per_ip > 10 in 10min
+    severity: critical
+    action:
+      - log
+      - block_ip
+      - notify_security_team
+
+  - id: sen-003
+    name: token_reuse_suspicious
+    description: |
+      Mismo token usado desde IPs geográficamente imposibles.
+    condition: token_used_from_multiple_geos == true
+    severity: high
+    action:
+      - log
+      - invalidate_token
+      - notify_user
+
+  # ─── INPUT VALIDATION ──────────────────────────────────────
+  - id: sen-004
+    name: sql_injection
+    description: |
+      Patrones SQL en input: UNION, SELECT, DROP, etc.
+    condition: |
+      input matches /(union\s+select|select\s+from|drop\s+table|insert\s+into|--|\bor\b\s+1=1)/i
+    severity: critical
+    action:
+      - log
+      - block_ip_immediate
+      - notify_security_team
+      - alert
+
+  - id: sen-005
+    name: xss_attempt
+    description: |
+      Patrones de XSS: <script>, javascript:, onerror=, etc.
+    condition: |
+      input matches /(<script|javascript:|onerror=|onload=|alert\()/i
+    severity: high
+    action:
+      - log
+      - block_ip
+      - sanitize_input
+
+  - id: sen-006
+    name: path_traversal
+    description: |
+      Intento de acceder a archivos fuera del scope.
+    condition: |
+      input matches /(\.\.\/|\.\.\\|%2e%2e|\.\.%2f)/i
+    severity: critical
+    action:
+      - log
+      - block_ip_immediate
+      - notify_security_team
+
+  - id: sen-007
+    name: command_injection
+    description: |
+      Intento de ejecutar comandos del sistema.
+    condition: |
+      input matches /(;|\||&&|`|\$\(|>\s*\/etc\/)/ 
+    severity: critical
+    action:
+      - log
+      - block_ip_immediate
+      - notify_security_team
+      - alert
+
+  - id: sen-008
+    name: ssrf_attempt
+    description: |
+      Intento de forzar requests a servicios internos.
+    condition: |
+      input matches /(127\.0\.0\.1|localhost|169\.254\.|metadata\.google|0\.0\.0\.0)/
+    severity: high
+    action:
+      - log
+      - block_ip
+
+  - id: sen-009
+    name: nosql_injection
+    description: |
+      Inyección NoSQL con operadores $where, $ne, etc.
+    condition: |
+      input matches /(\$where|\$ne|\$gt|\$regex|\$expr)/i
+    severity: critical
+    action:
+      - log
+      - block_ip_immediate
+
+  # ─── RATE LIMITING ─────────────────────────────────────────
+  - id: sen-010
+    name: rate_limit_abuse
+    description: |
+      Cliente supera consistentemente el rate limit.
+    condition: rate_limit_exceeded_per_ip > 10 in 10min
+    severity: warning
+    action:
+      - log
+      - throttle_stricter
+
+  - id: sen-011
+    name: burst_detection
+    description: |
+      Picos anómalos de requests (>10x baseline).
+    condition: requests_rate > baseline * 10
+    severity: high
+    action:
+      - log
+      - throttle
+      - notify_ops
+
+  # ─── ANOMALÍAS DE COMPORTAMIENTO ───────────────────────────
+  - id: sen-012
+    name: fuzzing_detection
+    description: |
+      Muchos errores 422 (payload inválido). Posible fuzzing.
+    condition: errors_422_per_ip > 50 in 5min
+    severity: high
+    action:
+      - log
+      - throttle_stricter
+      - notify_security_team
+
+  - id: sen-013
+    name: user_agent_anomaly
+    description: |
+      User-Agent ausente o de bot conocido con malas intenciones.
+    condition: |
+      user_agent matches /(sqlmap|nikto|nmap|masscan|hydra|dirbuster)/
+    severity: high
+    action:
+      - log
+      - block_ip
+
+  - id: sen-014
+    name: header_anomaly
+    description: |
+      Headers malformados o faltantes esperados.
+    condition: headers_malformed == true
+    severity: medium
+    action:
+      - log
+      - reject_request
+
+  - id: sen-015
+    name: payload_size_anomaly
+    description: |
+      Payload inusualmente grande (>10 MB).
+    condition: payload_size_mb > 10
+    severity: warning
+    action:
+      - log
+      - reject_request
+
+  # ─── CIFRADO / TLS ─────────────────────────────────────────
+  - id: sen-016
+    name: tls_downgrade_attempt
+    description: |
+      Cliente forzando versión TLS < 1.3.
+    condition: tls_version < "1.3"
+    severity: high
+    action:
+      - log
+      - reject_connection
+
+  - id: sen-017
+    name: certificate_pinning_bypass
+    description: |
+      Intento de bypass de certificate pinning.
+    condition: tls_cert_mismatch == true
+    severity: critical
+    action:
+      - log
+      - reject_connection
+      - alert
+
+  # ─── PROTOCOLO ─────────────────────────────────────────────
+  - id: sen-018
+    name: http_method_anomaly
+    description: |
+      Uso de métodos HTTP inusuales (TRACE, TRACK, etc.).
+    condition: http_method IN [TRACE, TRACK, CONNECT, DEBUG]
+    severity: high
+    action:
+      - log
+      - reject_request
+
+  - id: sen-019
+    name: parameter_pollution
+    description: |
+      Mismo parámetro múltiples veces (HTTP Parameter Pollution).
+    condition: duplicate_parameters == true
+    severity: medium
+    action:
+      - log
+      - reject_request
+
+  - id: sen-020
+    name: open_redirect
+    description: |
+      Intento de redirigir a dominio externo vía parámetro.
+    condition: |
+      redirect_url NOT matches /^https:\/\/atribucion\.io/
+    severity: high
+    action:
+      - log
+      - reject_redirect
+
+# ─── IPs BLOQUEADAS PERMANENTEMENTE ──────────────────────────
+
+blocklist:
+  permanent: []
+  notes: |
+    IPs en blocklist permanente se bloquean antes de cualquier check.
+    Requiere revisión manual para agregar/remover.
+
+# ─── IPs CONFIABLES ──────────────────────────────────────────
+
+trusted_ips:
+  - 127.0.0.1
+  - ::1
+  - ${OFFICE_IP_1}
+  - ${OFFICE_IP_2}
+  - ${GITHUB_ACTIONS_IP_RANGE}
+  notes: |
+    IPs confiables saltan checks de rate limiting pero NO
+    de injection.
+
+# ─── UMBRALES ────────────────────────────────────────────────
+
+thresholds:
+  errors_401_per_ip_warning: 20
+  errors_401_per_ip_critical: 100
+  errors_422_per_ip_warning: 50
+  errors_422_per_ip_critical: 200
+  requests_per_ip_warning: 100
+  requests_per_ip_critical: 1000
+  payload_size_mb_warning: 5
+  payload_size_mb_critical: 10
+  anomaly_score_warning: 0.7
+  anomaly_score_critical: 0.9
+  burst_multiplier: 10
+
+# ─── ACCIONES ────────────────────────────────────────────────
+
+actions:
+  block_ip:
+    duration_minutes: 60
+    whitelist_trusted: true
+    notify: true
+    log_evidence: true
+
+  block_ip_immediate:
+    duration_minutes: 1440
+    whitelist_trusted: true
+    notify_security: true
+    log_full_request: true
+
+  throttle:
+    duration_minutes: 30
+    new_limit: 10
+    per: minute
+
+  throttle_stricter:
+    duration_minutes: 60
+    new_limit: 1
+    per: minute
+
+  reject_request:
+    status_code: 400
+    log: true
+
+  reject_connection:
+    status_code: 426
+    log: true
+
+  reject_redirect:
+    sanitize: true
+    default_url: https://atribucion.io
+
+  sanitize_input:
+    escape_html: true
+    strip_scripts: true
+
+  invalidate_token:
+    mark_as_revoked: true
+    notify_owner: true
+
+# ─── NOTIFICACIONES ──────────────────────────────────────────
+
+notifications:
+  - channel: log
+    level: info
+  - channel: email
+    to: security@atribucion.io
+    only_on: [high, critical]
+  - channel: slack
+    webhook: ${SLACK_WEBHOOK_SECURITY}
+    only_on: critical
+  - channel: pagerduty
+    only_on: critical
+    filter: [sen-004, sen-006, sen-007, sen-017]
+
+# ─── MÉTRICAS ────────────────────────────────────────────────
+
+metrics:
+  - name: attacks_detected_total
+    type: counter
+    labels: [detection_id, severity]
+  - name: ips_blocked_total
+    type: counter
+  - name: requests_rejected_total
+    type: counter
+    labels: [reason]
+  - name: anomaly_score
+    type: gauge
+  - name: detection_latency_ms
+    type: histogram
+
+# ─── RETENCIÓN ───────────────────────────────────────────────
+
+retention:
+  detection_logs_days: 365
+  blocked_ips_days: 90
+  incident_logs_days: 1825
+  evidence_days: 3650
+  metrics_days: 365
+
+# ─── CONFIGURACIÓN AVANZADA ──────────────────────────────────
+
+advanced:
+  max_workers: 8
+  timeout_seconds: 60
+  log_level: INFO
+  persist_state: true
+  state_file: ~/.atribucion/guards/sentinel-state.json
+  enable_ml_anomaly_detection: false
+  ml_model_path: null
+  enable_geo_blocking: false
+  blocked_countries: []
+  enable_waf_mode: true
+  waf_rules_path: ~/.atribucion/guards/waf-rules.json
