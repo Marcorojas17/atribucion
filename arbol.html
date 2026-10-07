@@ -2,594 +2,701 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Estructura del Proyecto atribucion/</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Índice · atribucion/</title>
 <style>
   :root {
     --bg: #0d1117;
     --bg-alt: #161b22;
+    --bg-hover: #1f242c;
     --border: #30363d;
     --text: #c9d1d9;
     --text-dim: #8b949e;
-    --folder: #79c0ff;
-    --file: #c9d1d9;
+    --accent: #58a6ff;
     --ok: #3fb950;
     --pending: #f85149;
-    --comment: #6e7681;
-    --accent: #58a6ff;
+    --folder: #79c0ff;
+    --markdown: #a5d6ff;
+    --python: #ffa657;
+    --html: #ff7b72;
+    --config: #d2a8ff;
+    --solidity: #7ee787;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    padding: 2rem;
+    padding: 2rem 1rem;
     background: var(--bg);
     color: var(--text);
-    font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
-    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
     line-height: 1.6;
   }
   .container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
+  }
+  header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.8rem;
+    background: linear-gradient(90deg, #58a6ff, #a5d6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  header a { color: var(--accent); text-decoration: none; }
+  header a:hover { text-decoration: underline; }
+
+  .search-box {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    margin: 1.5rem 0;
+    padding: 0.75rem 0;
+    background: var(--bg);
+  }
+  .search-box input {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
     background: var(--bg-alt);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 2rem;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
-  h1 {
-    color: var(--accent);
-    font-size: 1.4rem;
-    margin: 0 0 1.5rem 0;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
+  .search-box input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
   }
-  h1::before { content: '📁 '; }
-  .tree {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-  }
-  .tree ul {
-    list-style: none;
-    padding-left: 1.5rem;
-    margin: 0;
-    border-left: 1px dashed var(--border);
-  }
-  .tree li {
-    position: relative;
-    padding: 2px 0;
-    white-space: nowrap;
-  }
-  .tree li::before {
-    content: '';
-    position: absolute;
-    left: -1.5rem;
-    top: 0.9em;
-    width: 1rem;
-    height: 1px;
-    background: var(--border);
-  }
-  .tree > li::before { display: none; }
-  .folder { color: var(--folder); font-weight: 600; }
-  .folder::before { content: '📂 '; }
-  .file::before { content: '📄 '; }
-  .file { color: var(--file); }
-  .name { margin-left: 0.5rem; }
-  .status { margin-left: 0.75rem; font-size: 0.9em; }
-  .ok { color: var(--ok); }
-  .pending { color: var(--pending); }
-  .comment {
-    color: var(--comment);
-    font-style: italic;
-    margin-left: 1rem;
-    font-size: 0.85em;
-  }
-  .root {
-    color: var(--accent);
-    font-weight: 700;
-    font-size: 1.05rem;
-  }
-  .root::before { content: '📦 '; }
-  .summary {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    margin: 2rem 0;
-  }
-  .card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 1rem;
-  }
-  .card-title {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-    margin-bottom: 0.5rem;
-  }
-  .card-value {
-    font-size: 1.6rem;
-    font-weight: 700;
-  }
-  .card-value.ok { color: var(--ok); }
-  .card-value.pending { color: var(--pending); }
-  .legend {
+  .search-box input::placeholder { color: var(--text-dim); }
+
+  .stats {
     display: flex;
-    gap: 2rem;
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-    font-size: 0.85rem;
-    color: var(--text-dim);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
   }
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+  .stat strong { color: var(--text); }
+
+  .section {
+    margin-bottom: 1.5rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .section:hover { border-color: #404650; }
+  .section-header {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .section-header:hover { background: var(--bg-hover); }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    color: var(--folder);
+    font-size: 1rem;
+  }
+  .section-title .icon { font-size: 1.1rem; }
+  .section-count {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    font-weight: 400;
+    background: var(--bg);
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+  .chevron {
+    color: var(--text-dim);
+    transition: transform 0.2s;
+    font-size: 0.8rem;
+  }
+  .section.open .chevron { transform: rotate(90deg); }
+
+  .section-body {
+    display: none;
+    padding: 0 1.25rem 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .section.open .section-body { display: block; }
+
+  .file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.4rem;
+  }
+  .file-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    transition: background 0.15s;
+    font-size: 0.9rem;
+  }
+  .file-list li:hover { background: var(--bg-hover); }
+  .file-list a {
+    color: var(--text);
+    text-decoration: none;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .file-list a:hover { color: var(--accent); }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot.md { background: var(--markdown); }
+  .dot.py { background: var(--python); }
+  .dot.html { background: var(--html); }
+  .dot.json, .dot.yml, .dot.yaml, .dot.toml { background: var(--config); }
+  .dot.sol { background: var(--solidity); }
+  .dot.ts, .dot.js { background: #f1e05a; }
+  .dot.other { background: var(--text-dim); }
+
+  .ext {
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    font-family: monospace;
+    margin-left: auto;
+    padding-left: 0.5rem;
+  }
+
+  .hidden { display: none !important; }
+
+  .no-results {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-dim);
+    display: none;
+  }
+  .no-results.visible { display: block; }
+
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+  .badge.ok { background: rgba(63, 185, 80, 0.15); color: var(--ok); }
+  .badge.pending { background: rgba(248, 81, 73, 0.15); color: var(--pending); }
+  .badge.new { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
 </style>
 </head>
 <body>
 <div class="container">
 
-  <h1>Estructura del proyecto <span style="color:var(--text)">atribucion/</span></h1>
+<header>
+  <h1>📚 Índice del proyecto atribucion/</h1>
+  <p>
+    Repo: <a href="https://github.com/Marcorojas17/atribucion" target="_blank">Marcorojas17/atribucion</a>
+    · <a href="https://github.com/Marcorojas17/atribucion/blob/main/arbol.html" target="_blank">🌳 árbol del proyecto</a>
+  </p>
+</header>
 
-  <div class="summary">
-    <div class="card">
-      <div class="card-title">Archivos completados</div>
-      <div class="card-value ok">~250</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Pendientes</div>
-      <div class="card-value pending">~15</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Módulos principales</div>
-      <div class="card-value">17</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Estado global</div>
-      <div class="card-value ok">92%</div>
-    </div>
-  </div>
+<div class="search-box">
+  <input type="text" id="search" placeholder="🔍 Buscar archivo, módulo o ruta… (ej. kaf, mercadopago, test_)" autocomplete="off">
+</div>
 
-  <ul class="tree">
-    <li><span class="root">atribucion/</span>
+<div class="stats">
+  <div class="stat">📄 <strong id="totalCount">0</strong> archivos</div>
+  <div class="stat">✅ <strong id="okCount">0</strong> completados</div>
+  <div class="stat">🔴 <strong id="pendingCount">0</strong> pendientes</div>
+</div>
 
-      <ul>
-        <!-- RAÍZ -->
-        <li><span class="file"><span class="name">README.md</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">AI-CONTEXT.md</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">AI-MANIFEST.json</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">AI-MCP-SERVER.md</span><span class="status pending">🔴</span></span></li>
-        <li><span class="file"><span class="name">AGENTS.md</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">PROMPT-MAESTRO.md</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">CLAUDE.md</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">GEMINI.md</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">.cursorrules</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">LICENSE-MIT</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">LICENSE-APACHE</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">LICENSE-CC-BY-4.0</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">LICENSE-TRADEMARK</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">CHANGELOG.md</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">CONTRIBUTING.md</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">SECURITY.md</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">.gitignore</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">.editorconfig</span><span class="status pending">🔴</span></span></li>
-        <li><span class="file"><span class="name">.env.example</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">package.json</span><span class="status pending">🔴</span></span></li>
-        <li><span class="file"><span class="name">pnpm-workspace.yaml</span><span class="status pending">🔴</span></span></li>
-        <li><span class="file"><span class="name">pyproject.toml</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">requirements.txt</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">docker-compose.yml</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">Dockerfile</span><span class="status ok">✅</span></span></li>
-        <li><span class="file"><span class="name">Makefile</span><span class="status ok">✅</span></span></li>
+<div id="sections"></div>
 
-        <!-- .github -->
-        <li><span class="folder">.github/</span>
-          <ul>
-            <li><span class="folder">workflows/</span>
-              <ul>
-                <li><span class="file"><span class="name">ci.yml</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">verify.yml</span><span class="status pending">🔴</span></span></li>
-                <li><span class="file"><span class="name">security.yml</span><span class="status pending">🔴</span></span></li>
-                <li><span class="file"><span class="name">deploy.yml</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="file"><span class="name">CODEOWNERS</span><span class="status pending">🔴</span></span></li>
-            <li><span class="file"><span class="name">PULL_REQUEST_TEMPLATE.md</span><span class="status pending">🔴</span></span></li>
-            <li><span class="folder">ISSUE_TEMPLATE/</span>
-              <ul>
-                <li><span class="file"><span class="name">bug_report.md</span><span class="status pending">🔴</span></span></li>
-                <li><span class="file"><span class="name">feature_request.md</span><span class="status pending">🔴</span></span></li>
-                <li><span class="file"><span class="name">rfc_proposal.md</span><span class="status pending">🔴</span></span></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
+<div class="no-results" id="noResults">
+  🔍 No se encontraron resultados
+</div>
 
-        <!-- api -->
-        <li><span class="folder">api/</span>
-          <ul>
-            <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">main.py</span><span class="status ok">✅</span><span class="comment">(actualizado con kaf + middleware)</span></span></li>
-            <li><span class="folder">middleware/</span>
-              <ul>
-                <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">auth.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">rate_limit.py</span><span class="status ok">✅</span><span class="comment">(esta tanda)</span></span></li>
-                <li><span class="file"><span class="name">audit.py</span><span class="status ok">✅</span><span class="comment">(esta tanda)</span></span></li>
-                <li><span class="file"><span class="name">security_headers.py</span><span class="status ok">✅</span><span class="comment">(esta tanda)</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">routes/</span>
-              <ul>
-                <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">actions.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">agents.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">proofs.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">reports.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">payments.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">kaf.py</span><span class="status ok">✅</span><span class="comment">(esta tanda)</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">schemas/</span>
-              <ul>
-                <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">action.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">agent.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">payment.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">kaf.py</span><span class="status pending">🔴</span></span></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-
-        <!-- core -->
-        <li><span class="folder">core/src/atribucion/</span>
-          <ul>
-            <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">did.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">vc.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">contract.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">crypto.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">anchor.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">tsa.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">merkle.py</span><span class="status ok">✅</span></span></li>
-          </ul>
-        </li>
-
-        <!-- tests -->
-        <li><span class="folder">tests/</span>
-          <ul>
-            <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">test_crypto.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">test_did.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">test_contract.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">test_vc.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">test_merkle.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">test_anchor.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">test_tsa.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">test_api.py</span><span class="status ok">✅</span></span></li>
-          </ul>
-        </li>
-
-        <!-- atribucion/ (módulo) -->
-        <li><span class="folder">atribucion/</span>
-          <ul>
-            <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="folder">billing/</span>
-              <ul>
-                <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">plans.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">mercadopago.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">invoices.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">onboarding/</span>
-              <ul>
-                <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">flow.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">dashboard/</span>
-              <ul>
-                <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">repository.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-
-        <!-- sdk -->
-        <li><span class="folder">sdk/</span>
-          <ul>
-            <li><span class="folder">python/</span>
-              <ul>
-                <li><span class="file"><span class="name">pyproject.toml</span><span class="status ok">✅</span></span></li>
-                <li><span class="folder">src/atribucion_sdk/</span>
-                  <ul>
-                    <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                    <li><span class="file"><span class="name">client.py</span><span class="status ok">✅</span></span></li>
-                    <li><span class="file"><span class="name">crypto.py</span><span class="status ok">✅</span></span></li>
-                    <li><span class="file"><span class="name">types.py</span><span class="status ok">✅</span></span></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li><span class="folder">js/</span>
-              <ul>
-                <li><span class="file"><span class="name">package.json</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">tsconfig.json</span><span class="status ok">✅</span></span></li>
-                <li><span class="folder">src/</span>
-                  <ul>
-                    <li><span class="file"><span class="name">index.ts</span><span class="status ok">✅</span></span></li>
-                    <li><span class="file"><span class="name">client.ts</span><span class="status ok">✅</span></span></li>
-                    <li><span class="file"><span class="name">crypto.py</span><span class="status ok">✅</span><span class="comment">(ver nota *)</span></span></li>
-                    <li><span class="file"><span class="name">types.ts</span><span class="status ok">✅</span></span></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-
-        <!-- guards -->
-        <li><span class="folder">guards/</span>
-          <ul>
-            <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">base.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">runner.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">sha/agent.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">acta/agent.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">tsa/agent.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">phoenix/agent.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">nexus/agent.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">vault/agent.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">mrr/agent.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">oracle/agent.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">sentinel/agent.py</span><span class="status ok">✅</span></span></li>
-          </ul>
-        </li>
-
-        <!-- engine (expandido) -->
-        <li><span class="folder">engine/</span>
-          <ul>
-            <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="folder">runtime/</span>
-              <ul>
-                <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">state_machine.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">scheduler.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">executor.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">agent.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">sandbox.py</span><span class="status ok">✅</span><span class="comment">(nuevo)</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">inference/</span>
-              <ul>
-                <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="folder">local/</span>
-                  <ul>
-                    <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                    <li><span class="file"><span class="name">llama_cpp.py</span><span class="status ok">✅</span></span></li>
-                    <li><span class="file"><span class="name">ollama.py</span><span class="status ok">✅</span></span></li>
-                    <li><span class="file"><span class="name">mlx.py</span><span class="status ok">✅</span></span></li>
-                    <li><span class="file"><span class="name">vllm.py</span><span class="status ok">✅</span></span></li>
-                  </ul>
-                </li>
-                <li><span class="folder">fallback/</span>
-                  <ul>
-                    <li><span class="file"><span class="name">openai.py</span><span class="status ok">✅</span></span></li>
-                    <li><span class="file"><span class="name">anthropic.py</span><span class="status ok">✅</span></span></li>
-                    <li><span class="file"><span class="name">gemini.py</span><span class="status ok">✅</span></span></li>
-                  </ul>
-                </li>
-                <li><span class="file"><span class="name">router.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">quantize.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">memory/</span>
-              <ul>
-                <li><span class="file"><span class="name">episodic.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">semantic.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">procedural.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">vector_store.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">graph_store.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">consolidation.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">reasoning/</span>
-              <ul>
-                <li><span class="file"><span class="name">planner.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">chain_of_thought.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">tool_use.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">reflection.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">debate.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">learning/</span>
-              <ul>
-                <li><span class="file"><span class="name">local_rlhf.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">fine_tune.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">distill.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">experience.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">orchestrator/</span>
-              <ul>
-                <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">canonical_memory.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">handoff.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">madre.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">context.py</span><span class="status ok">✅</span><span class="comment">(nuevo)</span></span></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-
-        <!-- mesh -->
-        <li><span class="folder">mesh/</span>
-          <ul>
-            <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="folder">transport/</span>
-              <ul>
-                <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">libp2p.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">discovery/</span>
-              <ul>
-                <li><span class="file"><span class="name">dht.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">consensus/</span>
-              <ul>
-                <li><span class="file"><span class="name">crdt.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">storage/</span>
-              <ul>
-                <li><span class="file"><span class="name">sqlite.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-
-        <!-- kaf -->
-        <li><span class="folder">kaf/</span>
-          <ul>
-            <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">controls/controls.yaml</span><span class="status ok">✅</span></span></li>
-            <li><span class="folder">levels/</span>
-              <ul>
-                <li><span class="file"><span class="name">level-1-verified.md</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">level-2-compliant.md</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">level-3-assured.md</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">level-4-sovereign.md</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">certification/</span>
-              <ul>
-                <li><span class="file"><span class="name">auditor.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">certificate.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-
-        <!-- robotics -->
-        <li><span class="folder">robotics/</span>
-          <ul>
-            <li><span class="file"><span class="name">__init__.py</span><span class="status ok">✅</span></span></li>
-            <li><span class="folder">identity/</span>
-              <ul>
-                <li><span class="file"><span class="name">hardware_id.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">did_robot.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">proof_presence.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-
-        <!-- contracts -->
-        <li><span class="folder">contracts/</span>
-          <ul>
-            <li><span class="file"><span class="name">AttributionRegistry.sol</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">deploy/deploy_sepolia.py</span><span class="status ok">✅</span></span></li>
-          </ul>
-        </li>
-
-        <!-- apps -->
-        <li><span class="folder">apps/</span>
-          <ul>
-            <li><span class="file"><span class="name">portal/index.html</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">verifier/index.html</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">dashboard/index.html</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">checkout/index.html</span><span class="status ok">✅</span></span></li>
-          </ul>
-        </li>
-
-        <!-- docs -->
-        <li><span class="folder">docs/</span>
-          <ul>
-            <li><span class="file"><span class="name">quickstart.md</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">compliance/eu-ai-act.md</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">api/reference.md</span><span class="status ok">✅</span></span></li>
-          </ul>
-        </li>
-
-        <!-- legal -->
-        <li><span class="folder">legal/</span>
-          <ul>
-            <li><span class="file"><span class="name">terms.md</span><span class="status ok">✅</span></span></li>
-            <li><span class="file"><span class="name">privacy.md</span><span class="status ok">✅</span></span></li>
-          </ul>
-        </li>
-
-        <!-- security -->
-        <li><span class="folder">security/</span>
-          <ul>
-            <li><span class="folder">compliance/</span><span class="status ok">✅</span><span class="comment">5 archivos</span></li>
-            <li><span class="folder">policies/</span><span class="status ok">✅</span><span class="comment">4 archivos</span></li>
-            <li><span class="folder">audits/</span>
-              <ul>
-                <li><span class="file"><span class="name">internal/README.md</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">external/README.md</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">bug-bounty/</span>
-              <ul>
-                <li><span class="file"><span class="name">program.md</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">scope.md</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-
-        <!-- payments -->
-        <li><span class="folder">payments/</span>
-          <ul>
-            <li><span class="folder">mercadopago/</span>
-              <ul>
-                <li><span class="file"><span class="name">client.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">preferences.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">subscriptions.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">webhooks.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">verify.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">mxn/</span>
-              <ul>
-                <li><span class="file"><span class="name">conversion.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">oracle.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">stablecoin.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="folder">nom151/</span>
-              <ul>
-                <li><span class="file"><span class="name">psc_client.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">constancia.py</span><span class="status ok">✅</span></span></li>
-                <li><span class="file"><span class="name">sello.py</span><span class="status ok">✅</span></span></li>
-              </ul>
-            </li>
-            <li><span class="file"><span class="name">models.py</span><span class="status ok">✅</span></span></li>
-          </ul>
-        </li>
-
-        <!-- pendientes -->
-        <li><span class="folder">infra/</span><span class="status pending">🔴</span><span class="comment">(pendiente)</span></li>
-        <li><span class="folder">scripts/</span><span class="status pending">🔴</span><span class="comment">(pendiente)</span></li>
-        <li><span class="folder">tests/unit, integration, e2e/</span><span class="status pending">🔴</span><span class="comment">(pendiente)</span></li>
-
-      </ul>
-    </li>
-  </ul>
-
-  <div class="legend">
-    <span>✅ Completado</span>
-    <span>🔴 Pendiente</span>
-    <span>📂 Directorio</span>
-    <span>📄 Archivo</span>
-  </div>
+<footer>
+  Generado para <strong>atribucion/</strong> · Los <code>.md</code> y <code>.html</code> abren renderizados vía HTMLPreview
+</footer>
 
 </div>
+
+<script>
+// ============================================
+// CONFIGURACIÓN DEL REPO
+// ============================================
+const REPO_USER = "Marcorojas17";
+const REPO_NAME = "atribucion";
+const BRANCH = "main";
+const BASE = `https://github.com/${REPO_USER}/${REPO_NAME}/blob/${BRANCH}/`;
+const PREVIEW = `https://htmlpreview.github.io/?https://github.com/${REPO_USER}/${REPO_NAME}/blob/${BRANCH}/`;
+
+// ============================================
+// ESTRUCTURA DEL PROYECTO
+// ============================================
+const structure = [
+  {
+    name: "Raíz del proyecto",
+    icon: "📦",
+    files: [
+      { name: "README.md", status: "ok" },
+      { name: "AI-CONTEXT.md", status: "ok" },
+      { name: "AI-MANIFEST.json", status: "ok" },
+      { name: "AI-MCP-SERVER.md", status: "ok" },
+      { name: "AGENTS.md", status: "ok" },
+      { name: "PROMPT-MAESTRO.md", status: "ok" },
+      { name: "CLAUDE.md", status: "ok" },
+      { name: "GEMINI.md", status: "ok" },
+      { name: "CHANGELOG.md", status: "ok" },
+      { name: "CONTRIBUTING.md", status: "ok" },
+      { name: "SECURITY.md", status: "ok" },
+      { name: "arbol.html", status: "ok" },
+      { name: "LICENSE-MIT", status: "ok" },
+      { name: "LICENSE-APACHE", status: "ok" },
+      { name: "LICENSE-CC-BY-4.0", status: "ok" },
+      { name: "LICENSE-TRADEMARK", status: "ok" },
+      { name: "pyproject.toml", status: "ok" },
+      { name: "requirements.txt", status: "ok" },
+      { name: "docker-compose.yml", status: "ok" },
+      { name: "Dockerfile", status: "ok" },
+      { name: "Makefile", status: "ok" },
+      { name: ".env.example", status: "ok" },
+    ]
+  },
+  {
+    name: "api/",
+    icon: "🔌",
+    files: [
+      { name: "api/main.py", status: "ok" },
+      { name: "api/middleware/auth.py", status: "ok" },
+      { name: "api/middleware/rate_limit.py", status: "ok" },
+      { name: "api/middleware/audit.py", status: "ok" },
+      { name: "api/middleware/security_headers.py", status: "ok" },
+      { name: "api/routes/actions.py", status: "ok" },
+      { name: "api/routes/agents.py", status: "ok" },
+      { name: "api/routes/proofs.py", status: "ok" },
+      { name: "api/routes/reports.py", status: "ok" },
+      { name: "api/routes/payments.py", status: "ok" },
+      { name: "api/routes/kaf.py", status: "ok" },
+      { name: "api/schemas/action.py", status: "ok" },
+      { name: "api/schemas/agent.py", status: "ok" },
+      { name: "api/schemas/payment.py", status: "ok" },
+      { name: "api/schemas/kaf.py", status: "pending" },
+    ]
+  },
+  {
+    name: "core/src/atribucion/",
+    icon: "🧬",
+    files: [
+      { name: "core/src/atribucion/did.py", status: "ok" },
+      { name: "core/src/atribucion/vc.py", status: "ok" },
+      { name: "core/src/atribucion/contract.py", status: "ok" },
+      { name: "core/src/atribucion/crypto.py", status: "ok" },
+      { name: "core/src/atribucion/anchor.py", status: "ok" },
+      { name: "core/src/atribucion/tsa.py", status: "ok" },
+      { name: "core/src/atribucion/merkle.py", status: "ok" },
+    ]
+  },
+  {
+    name: "tests/",
+    icon: "🧪",
+    files: [
+      { name: "tests/test_crypto.py", status: "ok" },
+      { name: "tests/test_did.py", status: "ok" },
+      { name: "tests/test_contract.py", status: "ok" },
+      { name: "tests/test_vc.py", status: "ok" },
+      { name: "tests/test_merkle.py", status: "ok" },
+      { name: "tests/test_anchor.py", status: "ok" },
+      { name: "tests/test_tsa.py", status: "ok" },
+      { name: "tests/test_api.py", status: "ok" },
+    ]
+  },
+  {
+    name: "atribucion/ (módulo interno)",
+    icon: "📊",
+    files: [
+      { name: "atribucion/billing/plans.py", status: "ok" },
+      { name: "atribucion/billing/mercadopago.py", status: "ok" },
+      { name: "atribucion/billing/invoices.py", status: "ok" },
+      { name: "atribucion/onboarding/flow.py", status: "ok" },
+      { name: "atribucion/dashboard/repository.py", status: "ok" },
+    ]
+  },
+  {
+    name: "sdk/",
+    icon: "🧰",
+    files: [
+      { name: "sdk/python/pyproject.toml", status: "ok" },
+      { name: "sdk/python/src/atribucion_sdk/client.py", status: "ok" },
+      { name: "sdk/python/src/atribucion_sdk/crypto.py", status: "ok" },
+      { name: "sdk/python/src/atribucion_sdk/types.py", status: "ok" },
+      { name: "sdk/js/package.json", status: "ok" },
+      { name: "sdk/js/src/index.ts", status: "ok" },
+      { name: "sdk/js/src/client.ts", status: "ok" },
+      { name: "sdk/js/src/types.ts", status: "ok" },
+    ]
+  },
+  {
+    name: "guards/",
+    icon: "🛡️",
+    files: [
+      { name: "guards/base.py", status: "ok" },
+      { name: "guards/runner.py", status: "ok" },
+      { name: "guards/sha/agent.py", status: "ok" },
+      { name: "guards/acta/agent.py", status: "ok" },
+      { name: "guards/tsa/agent.py", status: "ok" },
+      { name: "guards/phoenix/agent.py", status: "ok" },
+      { name: "guards/nexus/agent.py", status: "ok" },
+      { name: "guards/vault/agent.py", status: "ok" },
+      { name: "guards/mrr/agent.py", status: "ok" },
+      { name: "guards/oracle/agent.py", status: "ok" },
+      { name: "guards/sentinel/agent.py", status: "ok" },
+    ]
+  },
+  {
+    name: "engine/",
+    icon: "⚙️",
+    files: [
+      { name: "engine/runtime/state_machine.py", status: "ok" },
+      { name: "engine/runtime/scheduler.py", status: "ok" },
+      { name: "engine/runtime/executor.py", status: "ok" },
+      { name: "engine/runtime/agent.py", status: "ok" },
+      { name: "engine/runtime/sandbox.py", status: "ok", tag: "new" },
+      { name: "engine/inference/local/llama_cpp.py", status: "ok" },
+      { name: "engine/inference/local/ollama.py", status: "ok" },
+      { name: "engine/inference/local/mlx.py", status: "ok" },
+      { name: "engine/inference/local/vllm.py", status: "ok" },
+      { name: "engine/inference/fallback/openai.py", status: "ok" },
+      { name: "engine/inference/fallback/anthropic.py", status: "ok" },
+      { name: "engine/inference/fallback/gemini.py", status: "ok" },
+      { name: "engine/inference/router.py", status: "ok" },
+      { name: "engine/inference/quantize.py", status: "ok" },
+      { name: "engine/memory/episodic.py", status: "ok" },
+      { name: "engine/memory/semantic.py", status: "ok" },
+      { name: "engine/memory/procedural.py", status: "ok" },
+      { name: "engine/memory/vector_store.py", status: "ok" },
+      { name: "engine/memory/graph_store.py", status: "ok" },
+      { name: "engine/memory/consolidation.py", status: "ok" },
+      { name: "engine/reasoning/planner.py", status: "ok" },
+      { name: "engine/reasoning/chain_of_thought.py", status: "ok" },
+      { name: "engine/reasoning/tool_use.py", status: "ok" },
+      { name: "engine/reasoning/reflection.py", status: "ok" },
+      { name: "engine/reasoning/debate.py", status: "ok" },
+      { name: "engine/learning/local_rlhf.py", status: "ok" },
+      { name: "engine/learning/fine_tune.py", status: "ok" },
+      { name: "engine/learning/distill.py", status: "ok" },
+      { name: "engine/learning/experience.py", status: "ok" },
+      { name: "engine/orchestrator/canonical_memory.py", status: "ok" },
+      { name: "engine/orchestrator/handoff.py", status: "ok" },
+      { name: "engine/orchestrator/madre.py", status: "ok" },
+      { name: "engine/orchestrator/context.py", status: "ok", tag: "new" },
+    ]
+  },
+  {
+    name: "mesh/",
+    icon: "🕸️",
+    files: [
+      { name: "mesh/transport/libp2p.py", status: "ok" },
+      { name: "mesh/discovery/dht.py", status: "ok" },
+      { name: "mesh/consensus/crdt.py", status: "ok" },
+      { name: "mesh/storage/sqlite.py", status: "ok" },
+    ]
+  },
+  {
+    name: "kaf/",
+    icon: "📋",
+    files: [
+      { name: "kaf/controls/controls.yaml", status: "ok" },
+      { name: "kaf/levels/level-1-verified.md", status: "ok" },
+      { name: "kaf/levels/level-2-compliant.md", status: "ok" },
+      { name: "kaf/levels/level-3-assured.md", status: "ok" },
+      { name: "kaf/levels/level-4-sovereign.md", status: "ok" },
+      { name: "kaf/certification/auditor.py", status: "ok" },
+      { name: "kaf/certification/certificate.py", status: "ok" },
+    ]
+  },
+  {
+    name: "robotics/",
+    icon: "🤖",
+    files: [
+      { name: "robotics/identity/hardware_id.py", status: "ok" },
+      { name: "robotics/identity/did_robot.py", status: "ok" },
+      { name: "robotics/identity/proof_presence.py", status: "ok" },
+    ]
+  },
+  {
+    name: "contracts/",
+    icon: "⛓️",
+    files: [
+      { name: "contracts/AttributionRegistry.sol", status: "ok" },
+      { name: "contracts/deploy/deploy_sepolia.py", status: "ok" },
+    ]
+  },
+  {
+    name: "apps/",
+    icon: "🖥️",
+    files: [
+      { name: "apps/portal/index.html", status: "ok" },
+      { name: "apps/verifier/index.html", status: "ok" },
+      { name: "apps/dashboard/index.html", status: "ok" },
+      { name: "apps/checkout/index.html", status: "ok" },
+    ]
+  },
+  {
+    name: "docs/",
+    icon: "📖",
+    files: [
+      { name: "docs/quickstart.md", status: "ok" },
+      { name: "docs/compliance/eu-ai-act.md", status: "ok" },
+      { name: "docs/api/reference.md", status: "ok" },
+    ]
+  },
+  {
+    name: "legal/",
+    icon: "⚖️",
+    files: [
+      { name: "legal/terms.md", status: "ok" },
+      { name: "legal/privacy.md", status: "ok" },
+    ]
+  },
+  {
+    name: "security/",
+    icon: "🔐",
+    files: [
+      { name: "security/bug-bounty/program.md", status: "ok" },
+      { name: "security/bug-bounty/scope.md", status: "ok" },
+      { name: "security/audits/internal/README.md", status: "ok" },
+      { name: "security/audits/external/README.md", status: "ok" },
+    ]
+  },
+  {
+    name: "payments/",
+    icon: "💳",
+    files: [
+      { name: "payments/mercadopago/client.py", status: "ok" },
+      { name: "payments/mercadopago/preferences.py", status: "ok" },
+      { name: "payments/mercadopago/subscriptions.py", status: "ok" },
+      { name: "payments/mercadopago/webhooks.py", status: "ok" },
+      { name: "payments/mercadopago/verify.py", status: "ok" },
+      { name: "payments/mxn/conversion.py", status: "ok" },
+      { name: "payments/mxn/oracle.py", status: "ok" },
+      { name: "payments/mxn/stablecoin.py", status: "ok" },
+      { name: "payments/nom151/psc_client.py", status: "ok" },
+      { name: "payments/nom151/constancia.py", status: "ok" },
+      { name: "payments/nom151/sello.py", status: "ok" },
+      { name: "payments/models.py", status: "ok" },
+    ]
+  },
+  {
+    name: ".github/",
+    icon: "🐙",
+    files: [
+      { name: ".github/workflows/ci.yml", status: "ok" },
+      { name: ".github/workflows/deploy.yml", status: "ok" },
+    ]
+  },
+  {
+    name: "Pendientes por crear",
+    icon: "🚧",
+    files: [
+      { name: "infra/", status: "pending", isFolder: true },
+      { name: "scripts/", status: "pending", isFolder: true },
+      { name: "tests/unit/", status: "pending", isFolder: true },
+      { name: "tests/integration/", status: "pending", isFolder: true },
+      { name: "tests/e2e/", status: "pending", isFolder: true },
+      { name: ".editorconfig", status: "pending" },
+      { name: ".github/CODEOWNERS", status: "pending" },
+      { name: ".github/PULL_REQUEST_TEMPLATE.md", status: "pending" },
+      { name: ".github/workflows/verify.yml", status: "pending" },
+      { name: ".github/workflows/security.yml", status: "pending" },
+    ]
+  },
+];
+
+// ============================================
+// UTILIDADES
+// ============================================
+function getExt(filename) {
+  const parts = filename.split('.');
+  if (parts.length < 2) return 'other';
+  return parts[parts.length - 1].toLowerCase();
+}
+
+function isRenderable(filename) {
+  const ext = getExt(filename);
+  return ext === 'md' || ext === 'html' || ext === 'htm';
+}
+
+function getUrl(path) {
+  if (path.endsWith('/')) {
+    // Es una carpeta pendiente → link a GitHub tree
+    return `https://github.com/${REPO_USER}/${REPO_NAME}/tree/${BRANCH}/${path}`;
+  }
+  return isRenderable(path) ? PREVIEW + path : BASE + path;
+}
+
+function getIcon(ext) {
+  const map = { md: '📝', py: '🐍', html: '🌐', json: '📋', yml: '⚙️', yaml: '⚙️', toml: '⚙️', sol: '⛓️', ts: '🔷', js: '🟨' };
+  return map[ext] || '📄';
+}
+
+// ============================================
+// RENDER
+// ============================================
+let totalFiles = 0;
+let okFiles = 0;
+let pendingFiles = 0;
+const sectionsEl = document.getElementById('sections');
+const noResultsEl = document.getElementById('noResults');
+
+structure.forEach((section, idx) => {
+  const sectionEl = document.createElement('div');
+  sectionEl.className = 'section';
+  sectionEl.dataset.section = section.name.toLowerCase();
+
+  const header = document.createElement('div');
+  header.className = 'section-header';
+  header.innerHTML = `
+    <div class="section-title">
+      <span class="icon">${section.icon}</span>
+      <span>${section.name}</span>
+      <span class="section-count">${section.files.length}</span>
+    </div>
+    <span class="chevron">▶</span>
+  `;
+  header.addEventListener('click', () => sectionEl.classList.toggle('open'));
+  sectionEl.appendChild(header);
+
+  const body = document.createElement('div');
+  body.className = 'section-body';
+
+  const list = document.createElement('ul');
+  list.className = 'file-list';
+
+  section.files.forEach(file => {
+    totalFiles++;
+    if (file.status === 'ok') okFiles++;
+    if (file.status === 'pending') pendingFiles++;
+
+    const li = document.createElement('li');
+    li.dataset.name = file.name.toLowerCase();
+    li.dataset.section = section.name.toLowerCase();
+
+    const ext = getExt(file.name);
+    const url = getUrl(file.name);
+
+    let badge = '';
+    if (file.tag === 'new') badge = '<span class="badge new">NUEVO</span>';
+    else if (file.status === 'pending') badge = '<span class="badge pending">PENDIENTE</span>';
+
+    const shortName = file.name.includes('/') ? file.name.split('/').pop() : file.name;
+    const pathPrefix = file.name.includes('/') ? file.name.substring(0, file.name.lastIndexOf('/') + 1) : '';
+
+    li.innerHTML = `
+      <a href="${url}" target="_blank" title="${file.name}">
+        <span class="dot ${ext}"></span>
+        <span style="overflow:hidden;text-overflow:ellipsis;">
+          <span style="color:var(--text-dim);font-size:0.8em;">${pathPrefix}</span>${shortName}
+        </span>
+        ${badge}
+        <span class="ext">${getIcon(ext)} .${ext}</span>
+      </a>
+    `;
+    list.appendChild(li);
+  });
+
+  body.appendChild(list);
+  sectionEl.appendChild(body);
+  sectionsEl.appendChild(sectionEl);
+
+  // Abrir las 3 primeras secciones por defecto
+  if (idx < 2) sectionEl.classList.add('open');
+});
+
+// Actualizar stats
+document.getElementById('totalCount').textContent = totalFiles;
+document.getElementById('okCount').textContent = okFiles;
+document.getElementById('pendingCount').textContent = pendingFiles;
+
+// ============================================
+// BÚSQUEDA
+// ============================================
+const searchInput = document.getElementById('search');
+searchInput.addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  let anyVisible = false;
+
+  document.querySelectorAll('.section').forEach(section => {
+    let sectionHasMatch = false;
+    section.querySelectorAll('.file-list li').forEach(li => {
+      const match = !q || li.dataset.name.includes(q) || li.dataset.section.includes(q);
+      li.classList.toggle('hidden', !match);
+      if (match) sectionHasMatch = true;
+    });
+    section.classList.toggle('hidden', !sectionHasMatch);
+    if (sectionHasMatch) {
+      anyVisible = true;
+      if (q) section.classList.add('open');
+    }
+  });
+
+  noResultsEl.classList.toggle('visible', !anyVisible);
+});
+
+// Atajo: presionar "/" para enfocar el buscador
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement !== searchInput) {
+    e.preventDefault();
+    searchInput.focus();
+  }
+});
+</script>
+
 </body>
 </html>
