@@ -10,9 +10,9 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT OR Apache-2.0" }
 authors = [
-    { name = "Marco Antonio Rojas Valdivín", email = "marco@atribucion.io" }
+    { name = "Marco Antonio Rojas Valdovinos", email = "hola@atribucion.io" }
 ]
-keywords = ["ai", "compliance", "eu-ai-act", "agents", "blockchain", "wc3"]
+keywords = ["ai", "compliance", "eu-ai-act", "agents", "blockchain", "w3c"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -32,6 +32,8 @@ dependencies = [
     "pydantic-settings>=2.5.0",
     "httpx>=0.27.0",
     "python-multipart>=0.0.12",
+    "email-validator>=2.0.0",
+    "pyyaml>=6.0.0",
 ]
 
 [project.optional-dependencies]
@@ -44,11 +46,12 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["core/src"]
+where = ["core/src", "."]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "core/tests"]
+testpaths = ["tests"]
 asyncio_mode = "auto"
+pythonpath = ["core/src", "."]
 
 [tool.ruff]
 line-length = 100
