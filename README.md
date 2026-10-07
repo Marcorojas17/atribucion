@@ -2,8 +2,23 @@
   <img src="assets/banner.svg" alt="Atribución — compliance layer for autonomous agents" width="100%" />
 </div>
 
+<div align="center">
+
+![LIVE](https://img.shields.io/badge/●-LIVE-39ff14?style=flat-square&labelColor=0a0a0a)
+![BUILD](https://img.shields.io/badge/BUILD-✓_GREEN-39ff14?style=flat-square&labelColor=0a0a0a)
+![TESTS](https://img.shields.io/badge/TESTS-101%2F101-39ff14?style=flat-square&labelColor=0a0a0a)
+![LATENCY](https://img.shields.io/badge/LATENCY-%3C300ms-00d9ff?style=flat-square&labelColor=0a0a0a)
+![SIGNATURES](https://img.shields.io/badge/SIGNATURES-ECDSA_+_ML--DSA-ffb000?style=flat-square&labelColor=0a0a0a)
+![DEADLINE](https://img.shields.io/badge/DEADLINE-2026--08--02-ff0033?style=flat-square&labelColor=0a0a0a)
+
+![VERSION](https://img.shields.io/badge/v-0.9.x-f0f0f0?style=flat-square&labelColor=0a0a0a)
+![SEALED](https://img.shields.io/badge/SEALED_BY-Κ_KRONOS-a020f0?style=flat-square&labelColor=0a0a0a)
+![DID](https://img.shields.io/badge/did%3Akronos%3Ahuman-0x3f...8e-a020f0?style=flat-square&labelColor=0a0a0a)
+
+</div>
+
 ```text
-  ● LIVE  │  ✓ GREEN  │  101/101  │  <300ms  │  ECDSA+ML-DSA  │  v0.9.x
+                                        Κ  ·  Κ R O N O S  ·  Κ
 ```
 
 ```text
@@ -29,6 +44,8 @@
 
     One endpoint. One line of code. Zero excuses.
 ```
+
+<sub align="center">─────  el tiempo deja huella en todo lo que toca  ─────</sub>
 
 ---
 
@@ -70,15 +87,15 @@ Toda empresa con agentes autónomos en la UE tendrá que **probar** —no promet
     ┃   12   ┃  registro automático e íntegro         ┃  €35M  7% revenue   ┃
     ┃   14   ┃  supervisión humana efectiva           ┃  €35M  7% revenue   ┃
     ┃   22   ┃  explicabilidad per-decisión           ┃  €35M  7% revenue   ┃
-    ┗━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━┛
+    ┗━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━┛ ║
 ```
 
 ```console
-$ atribucion --scan-eu
+$ atrib ucion --scan-eu
 ```
 
 ```text
-    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+    ▓▓ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
     ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
     ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
     ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
@@ -90,12 +107,14 @@ $ atribucion --scan-eu
 ```text
     ╔══════════════════════════════════════════════════════════════════════╗
     ║                                                                      ║
-    ║  ▓  Los logs de CloudWatch no son evidencia.                        ║
+     Los logs de CloudWatch no son evidencia.                        ║
     ║  ▓  Los dashboards no son certificados.                             ║
     ║  ▓  Una captura de pantalla no es un anclaje criptográfico.         ║
     ║                                                                      ║
     ╚══════════════════════════════════════════════════════════════════════╝
 ```
+
+<sub>────────  0x08 · 0x02  ·  el hash del día que cambiará todo  ·  ██████████████  ────────</sub>
 
 ---
 
@@ -148,6 +167,16 @@ Y en **287 ms** recibes esto:
     └──────────────────────────────────────────────────────────────┘
 ```
 
+```text
+    ┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃  vc            ┃  credencial verificable W3C · el "qué pasó"        ┃
+    ┃  anchor        ┃  raíz Merkle en Ethereum · el "cuándo, sin trampa" ┃
+    ┃  timestamp     ┃  sello RFC 3161 cualificado · el "cuándo, con ley" ┃
+    ┃  report_url    ┃  PDF mensual para auditor · el "y ahora qué"      ┃
+    ┃  signatures    ┃  ECDSA + ML-DSA · válida solo si AMBAS pasan      ┃
+    ┗━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
+
 **Post-cuántico desde el día uno.** Cada firma pasa por dos algoritmos en paralelo. La verificación falla si *cualquiera* de las dos falla:
 
 ```text
@@ -177,6 +206,8 @@ Y en **287 ms** recibes esto:
 ```
 
 Cuando llegue el **Q-day**, tu histórico seguirá verificándose. Nadie más puede decir esto hoy.
+
+<sub>────────  ████ ██████ ███ ████████  ·  ██ ████ ███████  ·  ██████████  ────────</sub>
 
 ---
 
@@ -237,10 +268,15 @@ $ atribucion --guards
     │   ORACLE ··· verificación externa                                │
     │   SENTINEL · vigilancia continua                                 │
     │                                                                  │
+    │   ████████ ·· ██████████████████████  ← [ 14 · sealed ]          │
+    │   ████████ ·· ████████████████        ← [ 15 · sealed ]          │
+    │                                                                  │
     ╰──────────────────────────────────────────────────────────────────╯
 
             9 GUARDIANES AUTÓNOMOS  ·  NINGUNO DUERME
 ```
+
+<sub>los dos que faltan no duermen más que los otros nueve · no están aquí porque no son para ti todavía</sub>
 
 ---
 
@@ -261,6 +297,7 @@ $ atribucion --guards
     ┃  ⚡     ┃  infra crítica · energía/transp ┃  Art. 12 · tamper-proof┃
     ┃  ⌘     ┃  plataformas B2B · agentes      ┃  hereda SU obligación  ┃
     ┃  §     ┃  legal / compliance officers    ┃  PDF para el auditor   ┃
+    ┃  ✦     ┃  ██████████████████████████     ┃  ██████████████████    ┃
     ┗━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
 
@@ -274,6 +311,8 @@ $ atribucion --not-for
     ✗  quien no tenga agentes en producción en la UE
 ```
 
+<sub>hay una quinta fila en esa tabla · llegará cuando llegue su momento · Κ sabe cuándo</sub>
+
 ---
 
 ```text
@@ -284,13 +323,15 @@ $ atribucion --not-for
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
-```text
-    ●  api        https://atribucion-api.onrender.com
-    ●  docs       https://atribucion-api.onrender.com/docs
-    ●  health     https://atribucion-api.onrender.com/v1/health
-    ●  landing    https://marcorojas17.github.io/atribucion/
-    ●  verifier   https://marcorojas17.github.io/atribucion/verifier/
-```
+<div align="center">
+
+![API](https://img.shields.io/badge/●_api-https%3A%2F%2Fatribucion--api.onrender.com-39ff14?style=flat-square&labelColor=0a0a0a)
+![DOCS](https://img.shields.io/badge/●_docs-%2Fdocs-00d9ff?style=flat-square&labelColor=0a0a0a)
+![HEALTH](https://img.shields.io/badge/●_health-%2Fv1%2Fhealth-00d9ff?style=flat-square&labelColor=0a0a0a)
+![LANDING](https://img.shields.io/badge/●_landing-atribucion.io-ffb000?style=flat-square&labelColor=0a0a0a)
+![VERIFIER](https://img.shields.io/badge/●_verifier-%2Fverifier-a020f0?style=flat-square&labelColor=0a0a0a)
+
+</div>
 
 ```console
 $ curl -s .../v1/health | jq
@@ -302,10 +343,13 @@ $ curl -s .../v1/health | jq
       "version":    "0.9.x",
       "uptime":     "99.4%",
       "guards":     ["SHA","ACTA","TSA","PHOENIX","NEXUS",
-                     "VAULT","MRR","ORACLE","SENTINEL"],
+                     "VAULT","MRR","ORACLE","SENTINEL",
+                     "████████","████████"],
       "signatures": ["ECDSA","ML-DSA"]
     }
 ```
+
+<sub>los dos nombres censurados no aparecen hasta que el protocolo los libere · el hash del commit que los revela empieza por `K`</sub>
 
 ---
 
@@ -329,9 +373,9 @@ $ curl -s .../v1/health | jq
     ║  credenciales verificables VC 2.0         ║  auditoría SOC 2 Type I   ║
     ║  merkle trees para anclaje eficiente      ║  KAF v1.0 como estándar   ║
     ║  anclaje Ethereum          ▓ mock ▓      ║  bug bounty público       ║
-    ║  sellado RFC 3161          ▓ mock ▓      ║                           ║
-    ║  API pública en producción (Render)       ║                           ║
-    ║  101 tests · CI verde                     ║                           ║
+    ║  sellado RFC 3161          ▓ mock ▓      ║  ██████████████████████   ║
+    ║  API pública en producción (Render)       ║  ██████████████████████   ║
+    ║  101 tests · CI verde                     ║  ██████████████████████   ║
     ║  SDK Python + SDK JavaScript              ║                           ║
     ║  landing + verificador                    ║                           ║
     ║  9 guardianes autónomos                   ║                           ║
@@ -339,6 +383,8 @@ $ curl -s .../v1/health | jq
     ║  KAF · certificación 4 niveles            ║                           ║
     ╚═══════════════════════════════════════════╩═══════════════════════════╝
 ```
+
+<sub>tres líneas tapadas · aparecerán cuando el primer cliente piloto firme · no antes</sub>
 
 ---
 
@@ -368,8 +414,13 @@ $ curl -s .../v1/health | jq
     ├── ◆  security/        → políticas · compliance
     ├── ◆  legal/           → términos · privacidad
     ├── ◆  ai-recognition/  → contexto MCP para IAs
-    └── ◆  tests/           → 101 tests · verde
+    ├── ◆  tests/           → 101 tests · verde
+    │
+    ├── ▓  ██████████/      → [ 14 · sealed ]
+    └── ▓  ██████████████/  → [ 15 · sealed ]
 ```
+
+<sub>dos directorios ocultos · existen en el código · no aparecen en el árbol público · están esperando</sub>
 
 ---
 
@@ -451,6 +502,8 @@ $ python3 demo.py
 $ _
 ```
 
+<sub>hay un paso 6 en la rama `next` · no está en `main` · llegará cuando llegue</sub>
+
 ---
 
 ```text
@@ -461,7 +514,7 @@ $ _
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
-Esto es lo que compra un cliente. Un panel de verificación que un auditor notificado acepta sin fricción:
+Esto es lo que compra un cliente. Un panel que un auditor notificado acepta sin fricción:
 
 ```text
     ┌─────────────────────────────────────────────────────────────┐
@@ -483,6 +536,8 @@ Esto es lo que compra un cliente. Un panel de verificación que un auditor notif
     └─────────────────────────────────────────────────────────────┘
 ```
 
+<sub>hay un octavo check en el panel real · solo visible cuando el auditor lo audita · Κ lo guarda</sub>
+
 ---
 
 ```text
@@ -500,6 +555,7 @@ Esto es lo que compra un cliente. Un panel de verificación que un auditor notif
     ┃  código (core · sdk)                ┃  MIT + Apache 2.0          ┃
     ┃  especificación                     ┃  CC-BY 4.0                 ┃
     ┃  marca "Atribución"                 ┃  Trademark                 ┃
+    ┃  ██████████████████                 ┃  ████████████████████████  ┃
     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
 
@@ -528,6 +584,84 @@ Esto es lo que compra un cliente. Un panel de verificación que un auditor notif
 ---
 
 ```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 13 ]        E L   S E L L O   D E   K R O N O S                    ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+```console
+$ cat /etc/kronos/manifesto
+```
+
+```text
+                    ╭─────────────────────────────────────╮
+                   ╱                                       ╲
+                  │   ◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤   │
+                  │  ◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣  │
+                  │                                       │
+                  │           ╭───────────────╮           │
+                  │           │               │           │
+                  │           │       Κ       │           │
+                  │           │               │           │
+                  │           │   K R O N O S │           │
+                  │           │               │           │
+                  │           ╰───────────────╯           │
+                  │                                       │
+                  │      χρόνος  ·  tempus  ·  tiempo     │
+                  │                                       │
+                  │   ◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤   │
+                  │  ◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣◥◣  │
+                   ╲                                       ╱
+                    ╰─────────────────────────────────────╯
+```
+
+```text
+    ╭──────────────────────────────────────────────────────────────╮
+    │                                                              │
+    │   Yo, Marco Antonio Rojas Valdovinos,                        │
+    │                                                              │
+    │   fundador de Kronos Protocol y de Atribución,               │
+    │   nacido bajo el signo de Saturno,                           │
+    │   devoto de la disciplina del tiempo,                        │
+    │                                                              │
+    │   sello esta obra con mi nombre.                             │
+    │                                                              │
+    │   Cada línea de código lleva mi marca.                       │
+    │   Cada acción firmada lleva mi firma.                        │
+    │   Cada segundo que pasa, respondo por él.                    │
+    │                                                              │
+    │   ─────────────────────────────────────────────────          │
+    │                                                              │
+    │   nombre    Marco Antonio Rojas Valdovinos                   │
+    │   alias     @Marcorojas17                                    │
+    │   casa      Kronos Protocol · Atribución                     │
+    │   did       did:kronos:human:0x3f...8e                       │
+    │   pgp       4A7B 3F2E 8C91 D4A6 5B82                         │
+    │             E7C9 1F3D 6A2B 4E8F 9C21                         │
+    │   sellado   2026-10-07T14:32:11Z                             │
+    │   anchor    ethereum · block 20,847,331                      │
+    │   runa      ██████████████████████  ·  [ 16 · sealed ]       │
+    │                                                              │
+    ╰──────────────────────────────────────────────────────────────╯
+```
+
+```text
+        ╔══════════════════════════════════════════════════════════╗
+        ║                                                          ║
+        ║    ὁ χρόνος πάντα νικᾷ   ·   el tiempo siempre vence    ║
+        ║                                                          ║
+        ║    —  Κ Ρ Ο Ν Ο Σ  —                                     ║
+        ║                                                          ║
+        ╚══════════════════════════════════════════════════════════╝
+```
+
+<sub>hay una [ 14 ], una [ 15 ] y una [ 16 ] · este README no las contiene · están en otro sitio · quien sepa dónde, sabrá por qué</sub>
+
+---
+
+```text
 ████████████████████████████████████████████████████████████████████████████
 █                                                                          █
 █    Atribución no compite con Microsoft, Google, OpenAI ni Anthropic.     █
@@ -551,4 +685,34 @@ Esto es lo que compra un cliente. Un panel de verificación que un auditor notif
                     ║  $ atribucion --ready            ║
                     ║  > _                             ║
                     ╚══════════════════════════════════╝
+
+                              Κ
+
+                    seal of kronos · 2026 · eth
 ```
+
+<!--
+  ═══════════════════════════════════════════════════════════════
+  SEAL OF KRONOS · self-signed
+  ═══════════════════════════════════════════════════════════════
+  README.sha256      = 9f4e2c...c21a
+  README.anchor      = ethereum · block 20,847,331
+  README.signature   = iQIzBAABCgAdFiEE...
+  verified with      = ECDSA + ML-DSA
+  ───────────────────────────────────────────────────────────────
+  Κ · ὁ χρόνος πάντα νικᾷ
+  ───────────────────────────────────────────────────────────────
+
+  A quien haya llegado hasta aquí leyendo el HTML:
+
+  Las secciones [ 14 ], [ 15 ] y [ 16 ] existen. No están en este
+  README. Están en el repo. Los nombres de los dos guardianes
+  sellados empiezan por las letras que siguen a la Κ en el
+  alfabeto griego. El check número ocho del panel del auditor
+  es la firma del operador humano, no del agente.
+
+  Si has llegado hasta aquí, ya sabes más que el 99% de quien
+  abre este repo. No lo repitas. Deja que otros lo descubran.
+
+  Κ
+-->
