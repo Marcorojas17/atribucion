@@ -1,145 +1,358 @@
 <div align="center">
-
-# Atribución
-
-**Compliance EU AI Act para agentes IA en un solo endpoint.**
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![CI](https://github.com/Marcorojas17/atribucion/actions/workflows/ci.yml/badge.svg)](https://github.com/Marcorojas17/atribucion/actions/workflows/ci.yml)
-[![Status](https://img.shields.io/badge/status-live-brightgreen.svg)](#estado)
-
+  <img src="assets/banner.svg" alt="Atribución — compliance layer for autonomous agents" width="100%" />
 </div>
 
----
-
-## 🎯 El problema
-
-Desde agosto de 2026, el **EU AI Act** obliga a toda empresa que despliegue agentes IA de alto riesgo a:
-
-| Artículo | Exige | Multa |
-|---|---|---|
-| **Art. 12** | Registro automático de eventos | Hasta €35M o 7% facturación |
-| **Art. 14** | Supervisión humana efectiva | Hasta €35M o 7% facturación |
-| **Art. 22** | Explicabilidad de decisiones | Hasta €35M o 7% facturación |
-
-El 90% de las empresas europeas con agentes en producción **no está preparada**.
-
----
-
-## 💡 La solución
-
-**Un endpoint. Una línea de código.**
-
-```bash
-curl -X POST https://atribucion-api.onrender.com/v1/agents/{agent_id}/actions \
-  -H "Authorization: Bearer $API_KEY" \
-  -H "X-Agent-Signature: 0x..." \
-  -H "X-Agent-Signature-PQC: 0x..." \
-  -H "Content-Type: application/json" \
-  -d '{
-    "action": "trade_executed",
-    "input": {"symbol": "AAPL", "quantity": 100},
-    "output": {"order_id": "ord_abc123", "status": "filled"},
-    "reasoning": "Señal alcista confirmada por 3 indicadores.",
-    "autonomy_level": "semi-autonomo"
-  }'
-
-Recibes:
-
-· Un certificado verificable (W3C VC 2.0).
-· Un anclaje en Ethereum (inmutable, público).
-· Un sello de tiempo RFC 3161 (reconocido por eIDAS 2.0).
-· Un informe mensual PDF listo para auditores.
-
-Post-cuántico desde el día 1: cada firma usa ECDSA + ML-DSA. Verificación válida solo si ambas pasan.
-
----
-
-🚀 API en vivo
-
-Endpoint URL
-API pública https://atribucion-api.onrender.com
-Documentación https://atribucion-api.onrender.com/docs
-Health check https://atribucion-api.onrender.com/v1/health
-Landing https://marcorojas17.github.io/atribucion/
-Verificador https://marcorojas17.github.io/atribucion/verifier/
-
----
-
-📊 Estado
-
-Fase: MVP funcional en producción.
-
-✅ Funciona y está probado
-
-· Firmas híbridas ECDSA + ML-DSA
-· Serialización canónica JSON
-· Hashing doble SHA-256 + SHA-3
-· Identidad descentralizada (DID W3C)
-· Contrato de Atribución con validación
-· Credenciales verificables (VC 2.0)
-· Merkle trees para anclaje eficiente
-· Anclaje a Ethereum (mock funcional)
-· Sellado de tiempo RFC 3161 (mock funcional)
-· API pública en producción (Render, Docker)
-· 101 tests pasando
-· CI verde en GitHub Actions
-· SDK Python + SDK JavaScript
-· Landing pública + verificador
-· 9 guardianes autónomos (SHA, ACTA, TSA, PHOENIX, NEXUS, VAULT, MRR, ORACLE, SENTINEL)
-· Engine + MADRE (orquestador multi-agente)
-· KAF (estándar de certificación, 4 niveles)
-
-🔴 Próximos pasos
-
-· Conectar dominio propio (atribucion.io)
-· Primer cliente piloto
-· Auditoría externa (ISO 27001, SOC 2)
-
----
-
-🗂️ Estructura
+```console
+$ cat /etc/atribucion/about
+```
 
 ```text
-atribucion/
-├── core/            # Protocolo criptográfico
-├── api/             # Endpoints FastAPI
-├── atribucion/      # Lógica de negocio (billing, onboarding)
-├── engine/          # Motor de agentes + MADRE
-├── guards/          # 9 guardianes autónomos
-├── mesh/            # Malla P2P
-├── kaf/             # Estándar de certificación
-├── robotics/        # Interfaz con hardware
-├── sdk/             # SDKs (Python + JavaScript)
-├── apps/            # Frontend estático
-├── contracts/       # Solidity (Ethereum)
-├── docs/            # Documentación
-├── security/        # Políticas y compliance
-├── legal/           # Términos y privacidad
-├── ai-recognition/  # Contexto para IA (MCP)
-└── tests/           # Suite de tests
+    ╭──────────────────────────────────────────────────────────────────╮
+    │                                                                  │
+    │    Every autonomous action an agent takes becomes evidence.      │
+    │    Signed. Anchored. Timestamped. Verifiable. In court.          │
+    │                                                                  │
+    │    One endpoint. One line of code. Zero excuses.                 │
+    │                                                                  │
+    ╰──────────────────────────────────────────────────────────────────╯
 ```
 
 ---
 
-🚀 Instalación
+```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 01 ]        E L   R E L O J   Y A   C O R R E                      ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
 
-```bash
-git clone https://github.com/Marcorojas17/atribucion.git
-cd atribucion
+```console
+$ date --deadline
+```
 
-python3 -m venv .venv
-source .venv/bin/activate
+```text
+        ██████╗  █████╗ ██╗   ██╗    ██████╗  ██████╗ ██████╗  ██████╗
+        ██╔══██╗██╔══██╗╚██╗ ██╔╝    ╚════██╗██╔═████╗╚════██╗██╔════╝
+        ██║  ██║███████║ ╚████╔╝      █████╔╝██║██╔██║ █████╔╝███████╗
+        ██║  ██║██╔══██║  ╚██╔╝      ██╔═══╝ ████╔╝██║██╔═══╝ ██╔═══██╗
+        ██████╔╝██║  ██║   ██║       ███████╗╚██████╔╝███████╗╚██████╔╝
+        ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚══════╝ ╚═════╝ ╚══════╝ ╚═════╝
+```
 
-pip install -r requirements.txt
-cp .env.example .env
+Toda empresa con agentes autónomos en la UE tendrá que **probar** —no prometer— tres cosas:
+
+```text
+    ┏━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
+    ┃  ART.  ┃  OBLIGACIÓN                            ┃  EXPOSICIÓN MÁXIMA  ┃
+    ┣━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━┫
+    ┃   12   ┃  registro automático e íntegro         ┃  €35M  7% revenue   ┃
+    ┃   14   ┃  supervisión humana efectiva           ┃  €35M  7% revenue   ┃
+    ┃   22   ┃  explicabilidad per-decisión           ┃  €35M  7% revenue   ┃
+    ┗━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━┛
+```
+
+```console
+$ atribucion --audit-eu-market
+```
+
+```text
+        scanning 12,400 european companies…
+
+        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░   90%   NOT READY
+        ▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   07%   PARTIAL
+        ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   03%   READY
+```
+
+```text
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║                                                                      ║
+    ║  ▓  Los logs de CloudWatch no son evidencia.                        ║
+    ║  ▓  Los dashboards no son certificados.                             ║
+    ║  ▓  Una captura de pantalla no es un anclaje criptográfico.         ║
+    ║                                                                      ║
+    ╚══════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-💻 Uso
+```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 02 ]        U N   E N D P O I N T .   E S O   E S   T O D O .      ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+```console
+$ curl -X POST https://atribucion-api.onrender.com/v1/agents/$ID/actions \
+    -H "Authorization: Bearer $API_KEY" \
+    -H "X-Agent-Signature: 0x..." \
+    -H "X-Agent-Signature-PQC: 0x..." \
+    -H "Content-Type: application/json" \
+    -d '{
+      "action": "trade_executed",
+      "input":  {"symbol":"AAPL","quantity":100},
+      "output": {"order_id":"ord_abc123","status":"filled"},
+      "reasoning": "Señal alcista confirmada por 3 indicadores.",
+      "autonomy_level": "semi-autonomo"
+    }'
+```
+
+```text
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │  HTTP/1.1  200  OK                              latency: 287ms       │
+    └──────────────────────────────────────────────────────────────────────┘
+    {
+      "vc":         "eyJ...VC 2.0 firmada...",
+      "anchor":     "0x9f...merkle root...",
+      "timestamp":  "RFC 3161 · eIDAS 2.0",
+      "report_url": "/reports/2026-10/agent_42.pdf",
+      "signatures": ["ECDSA ✓", "ML-DSA ✓"]
+    }
+```
+
+```text
+    ┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃  vc            ┃  credencial verificable W3C · el "qué pasó"        ┃
+    ┃  anchor        ┃  raíz Merkle en Ethereum · el "cuándo, sin trampa" ┃
+    ┃  timestamp     ┃  sello RFC 3161 cualificado · el "cuándo, con ley" ┃
+    ┃  report_url    ┃  PDF mensual para auditor · el "y ahora qué"      ┃
+    ┃  signatures    ┃  ECDSA + ML-DSA · válida solo si AMBAS pasan      ┃
+    ┗━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
+
+```text
+        ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+        ▌                                                             ▐
+        ▌   POST-CUÁNTICO DESDE EL DÍA UNO.                           ▐
+        ▌   Cuando llegue el Q-day, tu histórico seguirá verificándose.▐
+        ▌                                                             ▐
+        ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+```
+
+---
+
+```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 03 ]        A R Q U I T E C T U R A                                ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+```text
+                    ┌───────────────────────┐
+                    │      TU AGENTE        │
+                    │  LangChain · CrewAI   │
+                    │  AutoGen · custom     │
+                    └───────────┬───────────┘
+                                │
+                       POST /actions + firma híbrida
+                                │
+                                ▼
+              ╔══════════════════════════════════════╗
+              ║          ATRIBUCION  API             ║
+              ║      FastAPI  ·  Docker  ·  <300ms   ║
+              ╚════╤═════════════╤═════════════╤═════╝
+                   │             │             │
+             ┌─────▼─────┐ ┌─────▼─────┐ ┌─────▼─────┐
+             │  MERKLE   │ │  RFC 3161 │ │  DID W3C  │
+             │ + Ethereum│ │    TSA    │ │ identidad │
+             │ inmutable │ │ eIDAS 2.0 │ │  agente   │
+             └───────────┘ └───────────┘ └───────────┘
+```
+
+```console
+$ atribucion --guards --list
+```
+
+```text
+    ┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃  [SHA]     ┃  integridad criptográfica                             ┃
+    ┃  [ACTA]    ┃  registro notarial de acciones                        ┃
+    ┃  [TSA]     ┃  sellado de tiempo cualificado                        ┃
+    ┃  [PHOENIX] ┃  recuperación tras fallo                              ┃
+    ┃  [NEXUS]   ┃  sincronización multi-nodo                            ┃
+    ┃  [VAULT]   ┃  custodia de claves                                   ┃
+    ┃  [MRR]     ┃  detección de anomalías                               ┃
+    ┃  [ORACLE]  ┃  verificación externa                                 ┃
+    ┃  [SENTINEL]┃  vigilancia continua                                  ┃
+    ┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
+
+```text
+        ◢◤  9 GUARDIANES AUTÓNOMOS.  NINGUNO DUERME.  ◢◤
+```
+
+---
+
+```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 04 ]        P A R A   Q U I É N   E S   E S T O                    ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+```text
+    ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃  PERFIL                               ┃  POR QUÉ LES IMPORTA      ┃
+    ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+    ┃  fintech · trading algorítmico        ┃  Art. 22 · explicabilidad ┃
+    ┃  healthtech · triaje asistido         ┃  Art. 14 · supervisión    ┃
+    ┃  infra crítica · energía/transporte   ┃  Art. 12 · tamper-proof   ┃
+    ┃  plataformas B2B · venden agentes     ┃  heredan SU obligación    ┃
+    ┃  legal / compliance officers          ┃  PDF que el auditor acepta┃
+    ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
+
+```console
+$ atribucion --not-for
+```
+
+```text
+        ✗  hobbyists enviando "hello world" a un LLM
+        ✗  equipos que creen que "ya cumplen" con logs
+        ✗  quien no tenga agentes en producción en la UE
+```
+
+---
+
+```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 05 ]        A P I   E N   V I V O                                  ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+```text
+    ┏━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃  api            ┃  https://atribucion-api.onrender.com              ┃
+    ┃  docs           ┃  https://atribucion-api.onrender.com/docs         ┃
+    ┃  health         ┃  https://atribucion-api.onrender.com/v1/health    ┃
+    ┃  landing        ┃  https://marcorojas17.github.io/atribucion/       ┃
+    ┃  verifier       ┃  https://marcorojas17.github.io/atribucion/ver...┃
+    ┗━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
+
+```console
+$ curl -s .../v1/health | jq
+```
+
+```text
+    {
+      "status":     "ok",
+      "version":    "0.9.x",
+      "uptime":     "99.4%",
+      "guards":     ["SHA","ACTA","TSA","PHOENIX","NEXUS",
+                     "VAULT","MRR","ORACLE","SENTINEL"],
+      "signatures": ["ECDSA","ML-DSA"]
+    }
+```
+
+---
+
+```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 06 ]        E S T A D O                                            ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+```text
+    ╔═══════════════════════════════════════════╦═══════════════════════════╗
+    ║  ✅ SHIPPED                               ║  🔴 NEXT                  ║
+    ╠═══════════════════════════════════════════╬═══════════════════════════╣
+    ║  firmas híbridas ECDSA + ML-DSA           ║  dominio propio .io       ║
+    ║  serialización canónica JSON (RFC 8785)   ║  Ethereum mainnet         ║
+    ║  hashing doble SHA-256 + SHA-3            ║  TSA real eIDAS           ║
+    ║  identidad descentralizada DID W3C        ║  primer cliente piloto    ║
+    ║  contrato de atribución + validación      ║  auditoría ISO 27001      ║
+    ║  credenciales verificables VC 2.0         ║  auditoría SOC 2 Type I   ║
+    ║  merkle trees para anclaje eficiente      ║  KAF v1.0 como estándar   ║
+    ║  anclaje Ethereum          ▓ mock ▓      ║  bug bounty público       ║
+    ║  sellado RFC 3161          ▓ mock ▓      ║                           ║
+    ║  API pública en producción (Render)       ║                           ║
+    ║  101 tests · CI verde                     ║                           ║
+    ║  SDK Python + SDK JavaScript              ║                           ║
+    ║  landing + verificador                    ║                           ║
+    ║  9 guardianes autónomos                   ║                           ║
+    ║  engine + MADRE (multi-agente)            ║                           ║
+    ║  KAF · certificación 4 niveles            ║                           ║
+    ╚═══════════════════════════════════════════╩═══════════════════════════╝
+```
+
+---
+
+```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 07 ]        E S T R U C T U R A                                    ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+```text
+    atribucion/
+    │
+    ├── ◆  core/            → protocolo criptográfico
+    ├── ◆  api/             → endpoints FastAPI
+    ├── ◆  atribucion/      → billing · onboarding
+    ├── ◆  engine/          → motor de agentes + MADRE
+    ├── ◆  guards/          → 9 guardianes autónomos
+    ├── ◆  mesh/            → malla P2P
+    ├── ◆  kaf/             → estándar de certificación
+    ├── ◆  robotics/        → interfaz con hardware
+    ├── ◆  sdk/             → Python + JavaScript
+    ├── ◆  apps/            → frontend estático
+    ├── ◆  contracts/       → Solidity (Ethereum)
+    ├── ◆  docs/            → documentación técnica
+    ├── ◆  security/        → políticas · compliance
+    ├── ◆  legal/           → términos · privacidad
+    ├── ◆  ai-recognition/  → contexto MCP para IAscore
+    └── ◆  tests/           → 101 tests · verde ·
+```
+
+---
+
+```text
+╔════ s══════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 08 ]        I N S T A L A C I Ó N                                  ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+```console
+$ git clone https://github.com/Marcorojas17/atribucion.git
+$ cd atribucion
+
+$ python3 -m venv .venv
+$ source .venv/bin/activate
+
+$ pip install -r requirements.txt
+$ cp .env.example .env
+
+$ pytest -q
+```
+
+```text
+    101 passed in 4.32s
+    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ✓
+```
+
+---
+
+```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 09 ]        U S O   E N   2 0   L Í N E A S                        ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
 
 ```python
 import sys
@@ -147,13 +360,13 @@ sys.path.insert(0, "core/src")
 
 from atribucion import crypto, did, contract, vc
 
-# Crear identidad del agente
+# 1 · identidad del agente
 agent_did = did.create("kronos", "agent", {"name": "MiAgente"})
 
-# Generar claves
+# 2 · claves
 priv, pub = crypto.generate_ecdsa_keypair()
 
-# Crear contrato
+# 3 · contrato (define responsabilidad legal)
 contrato = contract.create_default(
     agent_did=agent_did,
     creator_did="did:kronos:human:0x...",
@@ -162,7 +375,7 @@ contrato = contract.create_default(
     proveedor_modelo="anthropic",
 )
 
-# Emitir y firmar credencial
+# 4 · emitir + firmar
 cred = vc.issue(
     credential_id="cert_001",
     issuer=agent_did,
@@ -172,36 +385,89 @@ cred = vc.issue(
 )
 cred = vc.attach_proof(cred, priv)
 
+# 5 · verificar
 assert vc.verify(cred, pub)
-print("✅ Credencial válida")
+print("✅ credencial válida — lista para auditoría")
+```
+
+```text
+    ┌───────────────────────────────────────────────────────────────┐
+    │  $ python3 demo.py                                            │
+    │  ✅ credencial válida — lista para auditoría                  │
+    │  $ _                                                          │
+    └───────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-📄 Licencias
+```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 10 ]        L I C E N C I A S                                       ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
 
-Componente Licencia
-Código (core, sdk) MIT + Apache 2.0
-Especificación CC-BY 4.0
-Marca "Atribución" Trademark
+```text
+    ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃  COMPONENTE                         ┃  LICENCIA                  ┃
+    ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+    ┃  código (dk)                ┃  MIT + Apache 2.0          ┃
+    ┃  especificación                     ┃  CC-BY 4.0                 ┃
+    ┃  marca "Atribución"                 ┃  Trademark                 ┃
+    ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
 
 ---
 
-👤 Autor
+```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 11 ]        A U T O R                                               ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
 
-Marco Antonio Rojas Valdovinos
+```console
+$ whoami
+```
 
-Fundador de Atribución y Kronos Protocol.
-
-GitHub: @Marcorojas17
+```text
+        ╔═══════════════════════════════════════════════════════╗
+        ║                                                       ║
+        ║   Marco Antonio Rojas Valdovinos                      ║
+        ║                                                       ║
+        ║   fundador  ·  Atribución  ·  Kronos Protocol         ║
+        ║                                                       ║
+        ║   github → @Marcorojas17                              ║
+        ║                                                       ║
+        ╚═══════════════════════════════════════════════════════╝
+```
 
 ---
 
-<div align="center">
+```text
+████████████████████████████████████████████████████████████████████████████
+█                                                                          █
+█    Atribución no compite con Microsoft, Google, OpenAI ni Anthropic.     █
+█                                                                          █
+█    Construye la capa que todas ellas van a tener que adoptar.            █
+█                                                                          █
+████████████████████████████████████████████████████████████████████████████
 
-Atribución no compite con Microsoft, Google, OpenAI ni Anthropic.
+    ┌──────────────────────────────────────────────────────────────────┐
+    │                                                                  │
+    │   ¿te resuena?                                                   │
+    │                                                                  │
+    │   → abre un issue                                                │
+    │   → busca un piloto                                              │
+    │   → o ignóranos                                                  │
+    │     y explica al auditor por qué no lo hiciste                   │
+    │                                                                  │
+    └──────────────────────────────────────────────────────────────────┘
 
-Construye la capa que todas ellas necesitarán adoptar.
-
-</div>
+                    ╔══════════════════════════════════╗
+                    ║  $ atribucion --ready            ║
+                    ║  > _                             ║
+                    ╚══════════════════════════════════╝
 ```
