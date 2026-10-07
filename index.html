@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atribución — Compliance EU AI Act para agentes IA</title>
+<style>
+:root{--bg:#0a0a0a;--bg2:#141414;--fg:#f5f5f5;--mut:#888;--acc:#00ff88;--brd:#222}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:48px 24px}
+.logo{font-family:ui-monospace,monospace;color:var(--acc);font-size:13px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:48px;font-weight:700}
+.badge{display:inline-block;padding:4px 10px;background:rgba(0,255,136,.1);color:var(--acc);border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.08em;margin-bottom:20px}
+h1{font-size:clamp(28px,6vw,44px);line-height:1.1;font-weight:800;letter-spacing:-.02em;margin-bottom:20px}
+h1 span{color:var(--acc)}
+.lead{font-size:18px;color:var(--mut);margin-bottom:40px;max-width:560px}
+h2{font-size:20px;font-weight:700;margin:40px 0 16px}
+p{color:var(--mut);margin-bottom:14px}
+a.btn{display:inline-block;padding:12px 24px;background:var(--acc);color:#000;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;margin:6px 6px 6px 0}
+a.btn:hover{background:#00cc6a}
+a.btn-o{background:transparent;border:1px solid var(--brd);color:var(--fg)}
+a.btn-o:hover{border-color:var(--mut);background:var(--bg2)}
+pre{background:var(--bg2);border:1px solid var(--brd);border-radius:8px;padding:16px;overflow-x:auto;font-family:ui-monospace,monospace;font-size:12px;line-height:1.6;margin:16px 0}
+code{font-family:ui-monospace,monospace;background:var(--bg2);padding:2px 6px;border-radius:4px;color:var(--acc);font-size:.9em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:20px 0}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:8px;padding:16px}
+.card strong{display:block;color:var(--acc);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.card span{color:var(--mut);font-size:14px}
+ul{list-style:none;margin:16px 0}
+ul li{padding:6px 0;color:var(--mut);font-size:15px}
+ul li:before{content:"✓ ";color:var(--acc);font-weight:700}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--brd);color:var(--mut);font-size:13px;text-align:center}
+footer a{color:var(--acc);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="logo">◆ atribución</div>
+<div class="badge">EU AI ACT · AGOSTO 2026</div>
+<h1>Compliance <span>EU AI Act</span> para agentes IA en una línea de código.</h1>
+<p class="lead">Registra cada acción de tus agentes, obtén certificados verificables y cumple con Art. 12, 14 y 22. Sin abogados. Sin infraestructura.</p>
+<a href="https://atribucion-api.onrender.com/docs" class="btn">Ver API en vivo →</a>
+<a href="https://github.com/Marcorojas17/atribucion" class="btn btn-o">GitHub</a>
+
+<h2>El problema</h2>
+<p>Desde agosto de 2026, el EU AI Act obliga a toda empresa que despliegue agentes IA de alto riesgo a registrar cada acción, probar supervisión humana y explicar decisiones automatizadas.</p>
+<p>Multas: hasta <strong style="color:#ff4444">€35M o 7% de facturación global</strong>.</p>
+
+<h2>La solución</h2>
+<pre>curl -X POST https://atribucion-api.onrender.com/v1/agents/{id}/actions \
+  -H "Authorization: Bearer $API_KEY" \
+  -d '{"action":"trade_executed","input":{...},"output":{...}}'</pre>
+<div class="grid">
+<div class="card"><strong>01</strong><span>Certificado verificable W3C VC 2.0</span></div>
+<div class="card"><strong>02</strong><span>Anclaje en Ethereum</span></div>
+<div class="card"><strong>03</strong><span>Sello RFC 3161 (DigiCert)</span></div>
+<div class="card"><strong>04</strong><span>Informe mensual para auditores</span></div>
+</div>
+
+<h2>Estado actual</h2>
+<ul>
+<li>API pública en producción</li>
+<li>101 tests pasando</li>
+<li>CI verde en GitHub Actions</li>
+<li>SDK Python + SDK JavaScript</li>
+<li>9 guardianes autónomos</li>
+<li>Post-cuántico desde el día 1</li>
+</ul>
+
+<h2>Enlaces</h2>
+<p>
+<a href="https://atribucion-api.onrender.com/docs" class="btn">Documentación</a>
+<a href="https://atribucion-api.onrender.com/v1/health" class="btn btn-o">Health</a>
+<a href="https://marcorojas17.github.io/atribucion/verifier/" class="btn btn-o">Verificador</a>
+</p>
+
+<footer>
+Atribución · Marco Antonio Rojas Valdovinos · <a href="https://github.com/Marcorojas17/atribucion">GitHub</a>
+</footer>
+</div>
+</body>
+</html>
