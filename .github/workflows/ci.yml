@@ -32,7 +32,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/core/src:${{ github.workspace }}
         run: |
-          pytest tests/ -v --tb=short
+          pytest tests/ -v --tb=short --import-mode=importlib -p no:cacheprovider
 
       - name: Sanity check
         run: |
