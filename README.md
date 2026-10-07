@@ -2,19 +2,32 @@
   <img src="assets/banner.svg" alt="Atribución — compliance layer for autonomous agents" width="100%" />
 </div>
 
-```console
-$ cat /etc/atribucion/about
+```text
+  ● LIVE  │  ✓ GREEN  │  101/101  │  <300ms  │  ECDSA+ML-DSA  │  v0.9.x
 ```
 
 ```text
-    ╭──────────────────────────────────────────────────────────────────╮
-    │                                                                  │
-    │    Every autonomous action an agent takes becomes evidence.      │
-    │    Signed. Anchored. Timestamped. Verifiable. In court.          │
-    │                                                                  │
-    │    One endpoint. One line of code. Zero excuses.                 │
-    │                                                                  │
-    ╰──────────────────────────────────────────────────────────────────╯
+                                    ╱▔▔▔▔▔▔▔▔▔╲
+                                   ╱           ╲
+                                  ╱             ╲
+                                 │               │
+                                 │       ✓       │
+                                 │               │
+                                  ╲             ╱
+                                   ╲           ╱
+                                    ╲         ╱
+                                     ╲       ╱
+                                      ╲     ╱
+                                       ╲   ╱
+                                        ╲ ╱
+                                         V
+```
+
+```text
+    Every autonomous action an agent takes becomes evidence.
+    Signed. Anchored. Timestamped. Verifiable. In court.
+
+    One endpoint. One line of code. Zero excuses.
 ```
 
 ---
@@ -27,17 +40,25 @@ $ cat /etc/atribucion/about
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
+```text
+                      2023 ─── 2024 ─── 2025 ─── 2026 ─── 2027
+                                                ▲
+                                            08 · 02
+                                          DEADLINE
+                                    EU AI Act · high-risk regime
+```
+
 ```console
-$ date --deadline
+$ atribucion --countdown
 ```
 
 ```text
-        ██████╗  █████╗ ██╗   ██╗    ██████╗  ██████╗ ██████╗  ██████╗
-        ██╔══██╗██╔══██╗╚██╗ ██╔╝    ╚════██╗██╔═████╗╚════██╗██╔════╝
-        ██║  ██║███████║ ╚████╔╝      █████╔╝██║██╔██║ █████╔╝███████╗
-        ██║  ██║██╔══██║  ╚██╔╝      ██╔═══╝ ████╔╝██║██╔═══╝ ██╔═══██╗
-        ██████╔╝██║  ██║   ██║       ███████╗╚██████╔╝███████╗╚██████╔╝
-        ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚══════╝ ╚═════╝ ╚══════╝ ╚═════╝
+    ┌── 299 days · 14 hours · 22 minutes ─────────────────────────────┐
+    │                                                                 │
+    │   ████████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░      │
+    │   ├── 67% elapsed ─────────────┼──── 33% remaining ────┤        │
+    │                                                                 │
+    └─────────────────────────────────────────────────────────────────┘
 ```
 
 Toda empresa con agentes autónomos en la UE tendrá que **probar** —no prometer— tres cosas:
@@ -53,15 +74,17 @@ Toda empresa con agentes autónomos en la UE tendrá que **probar** —no promet
 ```
 
 ```console
-$ atribucion --audit-eu-market
+$ atribucion --scan-eu
 ```
 
 ```text
-        scanning 12,400 european companies…
+    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+    ░░░░░░░░░░░░◢◤░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░   90%   NOT READY
-        ▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   07%   PARTIAL
-        ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   03%   READY
+    ▓  NOT READY  90%           ░  PARTIAL  7%        ◢◤  READY  3%
 ```
 
 ```text
@@ -99,37 +122,61 @@ $ curl -X POST https://atribucion-api.onrender.com/v1/agents/$ID/actions \
     }'
 ```
 
-```text
-    ┌──────────────────────────────────────────────────────────────────────┐
-    │  HTTP/1.1  200  OK                              latency: 287ms       │
-    └──────────────────────────────────────────────────────────────────────┘
-    {
-      "vc":         "eyJ...VC 2.0 firmada...",
-      "anchor":     "0x9f...merkle root...",
-      "timestamp":  "RFC 3161 · eIDAS 2.0",
-      "report_url": "/reports/2026-10/agent_42.pdf",
-      "signatures": ["ECDSA ✓", "ML-DSA ✓"]
-    }
-```
+Y en **287 ms** recibes esto:
 
 ```text
-    ┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-    ┃  vc            ┃  credencial verificable W3C · el "qué pasó"        ┃
-    ┃  anchor        ┃  raíz Merkle en Ethereum · el "cuándo, sin trampa" ┃
-    ┃  timestamp     ┃  sello RFC 3161 cualificado · el "cuándo, con ley" ┃
-    ┃  report_url    ┃  PDF mensual para auditor · el "y ahora qué"      ┃
-    ┃  signatures    ┃  ECDSA + ML-DSA · válida solo si AMBAS pasan      ┃
-    ┗━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+    ┌──────────────────────────────────────────────────────────────┐
+    │  W3C VERIFIABLE CREDENTIAL                          v2.0     │
+    │  ════════════════════════════════════════════════════════    │
+    │                                                              │
+    │  id          urn:uuid:7a4e-...-c21a                          │
+    │  issuer      did:kronos:agent:0x3f...8e                      │
+    │  subject     did:kronos:agent:0x3f...8e                      │
+    │  action      trade_executed                                  │
+    │  evidence    sha256:9f4e...c21a                              │
+    │              ipfs:bafybeig...x7q                            │
+    │                                                              │
+    │  signatures                                                  │
+    │  ├─ ECDSA    secp256k1                          ✓ verified    │
+    │  └─ ML-DSA   dilithium-3                        ✓ verified    │
+    │                                                              │
+    │  anchored                                                    │
+    │  ├─ merkle   root 0x4a2b...f91c                              │
+    │  ├─ block    ethereum · 20,847,331                           │
+    │  └─ time     2026-10-07T14:32:11Z · RFC 3161 · eIDAS         │
+    │                                                              │
+    └──────────────────────────────────────────────────────────────┘
 ```
 
+**Post-cuántico desde el día uno.** Cada firma pasa por dos algoritmos en paralelo. La verificación falla si *cualquiera* de las dos falla:
+
 ```text
-        ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-        ▌                                                             ▐
-        ▌   POST-CUÁNTICO DESDE EL DÍA UNO.                           ▐
-        ▌   Cuando llegue el Q-day, tu histórico seguirá verificándose.▐
-        ▌                                                             ▐
-        ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+    ┌──────────────────────────────────────────────────────────────────┐
+    │                    S I G N I N G   C E R E M O N Y               │
+    ├──────────────────────────────────────────────────────────────────┤
+    │                                                                  │
+    │   payload  ──▶  canonical JSON (RFC 8785)  ──▶  sha256 + sha3   │
+    │                                                    │             │
+    │                                      ┌─────────────┴──────────┐  │
+    │                                      ▼                        ▼  │
+    │                            ┌──────────────────┐  ┌──────────────────┐
+    │                            │      ECDSA       │  │      ML-DSA      │
+    │                            │    secp256k1     │  │    dilithium-3   │
+    │                            │   ───────────    │  │   ───────────    │
+    │                            │   clásico · hoy  │  │  post-cuántico   │
+    │                            │        ✓         │  │        ✓         │
+    │                            └─────────┬────────┘  └─────────┬────────┘
+    │                                      │                     │
+    │                                      └──────────┬──────────┘
+    │                                                 ▼
+    │                                       ┌──────────────────┐
+    │                                       │   BOTH  PASS  ✓  │
+    │                                       └──────────────────┘
+    │                                                                  │
+    └──────────────────────────────────────────────────────────────────┘
 ```
+
+Cuando llegue el **Q-day**, tu histórico seguirá verificándose. Nadie más puede decir esto hoy.
 
 ---
 
@@ -142,47 +189,57 @@ $ curl -X POST https://atribucion-api.onrender.com/v1/agents/$ID/actions \
 ```
 
 ```text
-                    ┌───────────────────────┐
-                    │      TU AGENTE        │
-                    │  LangChain · CrewAI   │
-                    │  AutoGen · custom     │
-                    └───────────┬───────────┘
-                                │
-                       POST /actions + firma híbrida
-                                │
-                                ▼
-              ╔══════════════════════════════════════╗
-              ║          ATRIBUCION  API             ║
-              ║      FastAPI  ·  Docker  ·  <300ms   ║
-              ╚════╤═════════════╤═════════════╤═════╝
-                   │             │             │
-             ┌─────▼─────┐ ┌─────▼─────┐ ┌─────▼─────┐
-             │  MERKLE   │ │  RFC 3161 │ │  DID W3C  │
-             │ + Ethereum│ │    TSA    │ │ identidad │
-             │ inmutable │ │ eIDAS 2.0 │ │  agente   │
-             └───────────┘ └───────────┘ └───────────┘
+    ╭───────────────────────────╮
+    │        TU AGENTE          │
+    │                           │
+    │  LangChain · CrewAI       │
+    │  AutoGen · custom         │
+    │  cualquier framework      │
+    ╰─────────────┬─────────────╯
+                  │
+                  │   POST /actions
+                  │   + firma híbrida
+                  │
+                  ▼
+    ╔═══════════════════════════════════════════════════╗
+    ║                                                   ║
+    ║              A T R I B U C I O N                  ║
+    ║                    A P I                          ║
+    ║                                                   ║
+    ║      FastAPI  ·  Docker  ·  stateless  ·  <300ms  ║
+    ║                                                   ║
+    ╚═════════╤═══════════════╤═══════════════╤═════════╝
+              │               │               │
+        ┌─────▼─────┐   ┌─────▼─────┐   ┌─────▼─────┐
+        │  MERKLE   │   │  RFC 3161 │   │  DID W3C  │
+        │     +     │   │           │   │           │
+        │ ETHEREUM  │   │    TSA    │   │ identidad │
+        │           │   │           │   │           │
+        │ inmutable │   │ eIDAS 2.0 │   │  del      │
+        │ · público │   │ · cualif. │   │  agente   │
+        └───────────┘   └───────────┘   └───────────┘
 ```
 
 ```console
-$ atribucion --guards --list
+$ atribucion --guards
 ```
 
 ```text
-    ┏━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-    ┃  [SHA]     ┃  integridad criptográfica                             ┃
-    ┃  [ACTA]    ┃  registro notarial de acciones                        ┃
-    ┃  [TSA]     ┃  sellado de tiempo cualificado                        ┃
-    ┃  [PHOENIX] ┃  recuperación tras fallo                              ┃
-    ┃  [NEXUS]   ┃  sincronización multi-nodo                            ┃
-    ┃  [VAULT]   ┃  custodia de claves                                   ┃
-    ┃  [MRR]     ┃  detección de anomalías                               ┃
-    ┃  [ORACLE]  ┃  verificación externa                                 ┃
-    ┃  [SENTINEL]┃  vigilancia continua                                  ┃
-    ┗━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-```
+    ╭──────────────────────────────────────────────────────────────────╮
+    │                                                                  │
+    │   SHA ······ integridad criptográfica                            │
+    │   ACTA ····· registro notarial de acciones                       │
+    │   TSA ······ sellado de tiempo cualificado                       │
+    │   PHOENIX ·· recuperación tras fallo                             │
+    │   NEXUS ···· sincronización multi-nodo                           │
+    │   VAULT ···· custodia de claves                                  │
+    │   MRR ······ detección de anomalías                              │
+    │   ORACLE ··· verificación externa                                │
+    │   SENTINEL · vigilancia continua                                 │
+    │                                                                  │
+    ╰──────────────────────────────────────────────────────────────────╯
 
-```text
-        ◢◤  9 GUARDIANES AUTÓNOMOS.  NINGUNO DUERME.  ◢◤
+            9 GUARDIANES AUTÓNOMOS  ·  NINGUNO DUERME
 ```
 
 ---
@@ -196,15 +253,15 @@ $ atribucion --guards --list
 ```
 
 ```text
-    ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-    ┃  PERFIL                               ┃  POR QUÉ LES IMPORTA      ┃
-    ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-    ┃  fintech · trading algorítmico        ┃  Art. 22 · explicabilidad ┃
-    ┃  healthtech · triaje asistido         ┃  Art. 14 · supervisión    ┃
-    ┃  infra crítica · energía/transporte   ┃  Art. 12 · tamper-proof   ┃
-    ┃  plataformas B2B · venden agentes     ┃  heredan SU obligación    ┃
-    ┃  legal / compliance officers          ┃  PDF que el auditor acepta┃
-    ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+    ┏━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+    ┃        ┃  PERFIL                         ┃  POR QUÉ LES IMPORTA   ┃
+    ┣━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━┫
+    ┃  ⌁     ┃  fintech · trading algorítmico  ┃  Art. 22 · explicab.   ┃
+    ┃  ⚕     ┃  healthtech · triaje asistido   ┃  Art. 14 · supervisión ┃
+    ┃  ⚡     ┃  infra crítica · energía/transp ┃  Art. 12 · tamper-proof┃
+    ┃  ⌘     ┃  plataformas B2B · agentes      ┃  hereda SU obligación  ┃
+    ┃  §     ┃  legal / compliance officers    ┃  PDF para el auditor   ┃
+    ┗━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
 
 ```console
@@ -212,9 +269,9 @@ $ atribucion --not-for
 ```
 
 ```text
-        ✗  hobbyists enviando "hello world" a un LLM
-        ✗  equipos que creen que "ya cumplen" con logs
-        ✗  quien no tenga agentes en producción en la UE
+    ✗  hobbyists enviando "hello world" a un LLM
+    ✗  equipos que creen que "ya cumplen" con logs
+    ✗  quien no tenga agentes en producción en la UE
 ```
 
 ---
@@ -228,13 +285,11 @@ $ atribucion --not-for
 ```
 
 ```text
-    ┏━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-    ┃  api            ┃  https://atribucion-api.onrender.com              ┃
-    ┃  docs           ┃  https://atribucion-api.onrender.com/docs         ┃
-    ┃  health         ┃  https://atribucion-api.onrender.com/v1/health    ┃
-    ┃  landing        ┃  https://marcorojas17.github.io/atribucion/       ┃
-    ┃  verifier       ┃  https://marcorojas17.github.io/atribucion/ver...┃
-    ┗━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+    ●  api        https://atribucion-api.onrender.com
+    ●  docs       https://atribucion-api.onrender.com/docs
+    ●  health     https://atribucion-api.onrender.com/v1/health
+    ●  landing    https://marcorojas17.github.io/atribucion/
+    ●  verifier   https://marcorojas17.github.io/atribucion/verifier/
 ```
 
 ```console
@@ -312,14 +367,14 @@ $ curl -s .../v1/health | jq
     ├── ◆  docs/            → documentación técnica
     ├── ◆  security/        → políticas · compliance
     ├── ◆  legal/           → términos · privacidad
-    ├── ◆  ai-recognition/  → contexto MCP para IAscore
-    └── ◆  tests/           → 101 tests · verde ·
+    ├── ◆  ai-recognition/  → contexto MCP para IAs
+    └── ◆  tests/           → 101 tests · verde
 ```
 
 ---
 
 ```text
-╔════ s══════════════════════════════════════════════════════════════════════╗
+╔══════════════════════════════════════════════════════════════════════════╗
 ║                                                                          ║
 ║   [ 08 ]        I N S T A L A C I Ó N                                  ║
 ║                                                                          ║
@@ -390,12 +445,10 @@ assert vc.verify(cred, pub)
 print("✅ credencial válida — lista para auditoría")
 ```
 
-```text
-    ┌───────────────────────────────────────────────────────────────┐
-    │  $ python3 demo.py                                            │
-    │  ✅ credencial válida — lista para auditoría                  │
-    │  $ _                                                          │
-    └───────────────────────────────────────────────────────────────┘
+```console
+$ python3 demo.py
+✅ credencial válida — lista para auditoría
+$ _
 ```
 
 ---
@@ -403,7 +456,39 @@ print("✅ credencial válida — lista para auditoría")
 ```text
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║                                                                          ║
-║   [ 10 ]        L I C E N C I A S                                       ║
+║   [ 10 ]        L O   Q U E   V E   E L   A U D I T O R                ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+Esto es lo que compra un cliente. Un panel de verificación que un auditor notificado acepta sin fricción:
+
+```text
+    ┌─────────────────────────────────────────────────────────────┐
+    │  AUDITOR VERIFICATION                       atribucion.io   │
+    ├─────────────────────────────────────────────────────────────┤
+    │                                                             │
+    │  credential    cert_001                       ✓  valid      │
+    │  issuer        did:kronos:agent:0x3f...8e     ✓  trusted    │
+    │  signature     ECDSA + ML-DSA                 ✓  both pass  │
+    │  merkle proof  12 hashes → root               ✓  root match │
+    │  anchor        ethereum · block 20,847,331    ✓  confirmed  │
+    │  timestamp     RFC 3161 · eIDAS               ✓  qualified  │
+    │  reasoning     "3 indicadores concordantes"   ✓  present    │
+    │                                                             │
+    │  ────────────────────────────────────────────────────────   │
+    │                                                             │
+    │  RESULT   COMPLIANT WITH EU AI ACT · ART. 12 · 14 · 22      │
+    │                                                             │
+    └─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+```text
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║   [ 11 ]        L I C E N C I A S                                       ║
 ║                                                                          ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
@@ -412,7 +497,7 @@ print("✅ credencial válida — lista para auditoría")
     ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
     ┃  COMPONENTE                         ┃  LICENCIA                  ┃
     ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-    ┃  código (dk)                ┃  MIT + Apache 2.0          ┃
+    ┃  código (core · sdk)                ┃  MIT + Apache 2.0          ┃
     ┃  especificación                     ┃  CC-BY 4.0                 ┃
     ┃  marca "Atribución"                 ┃  Trademark                 ┃
     ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
@@ -423,25 +508,21 @@ print("✅ credencial válida — lista para auditoría")
 ```text
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║                                                                          ║
-║   [ 11 ]        A U T O R                                               ║
+║   [ 12 ]        A U T O R                                               ║
 ║                                                                          ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
-```console
-$ whoami
-```
-
 ```text
-        ╔═══════════════════════════════════════════════════════╗
-        ║                                                       ║
-        ║   Marco Antonio Rojas Valdovinos                      ║
-        ║                                                       ║
-        ║   fundador  ·  Atribución  ·  Kronos Protocol         ║
-        ║                                                       ║
-        ║   github → @Marcorojas17                              ║
-        ║                                                       ║
-        ╚═══════════════════════════════════════════════════════╝
+    ╭────────────────────────────────────────────────────────╮
+    │                                                        │
+    │   Marco Antonio Rojas Valdovinos                       │
+    │                                                        │
+    │   fundador · Atribución · Kronos Protocol              │
+    │                                                        │
+    │   github  →  @Marcorojas17                             │
+    │                                                        │
+    ╰────────────────────────────────────────────────────────╯
 ```
 
 ---
