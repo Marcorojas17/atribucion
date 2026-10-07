@@ -3,80 +3,592 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Atribución — Compliance EU AI Act para agentes IA</title>
+<meta name="description" content="Atribución — compliance EU AI Act para agentes autónomos. Un endpoint. Una línea de código.">
+<meta name="theme-color" content="#0a0a0a">
+<title>Atribución · compliance layer for autonomous agents</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' fill='%2339ff14'>Κ</text></svg>">
 <style>
-:root{--bg:#0a0a0a;--bg2:#141414;--fg:#f5f5f5;--mut:#888;--acc:#00ff88;--brd:#222}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6}
-.wrap{max-width:760px;margin:0 auto;padding:48px 24px}
-.logo{font-family:ui-monospace,monospace;color:var(--acc);font-size:13px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:48px;font-weight:700}
-.badge{display:inline-block;padding:4px 10px;background:rgba(0,255,136,.1);color:var(--acc);border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.08em;margin-bottom:20px}
-h1{font-size:clamp(28px,6vw,44px);line-height:1.1;font-weight:800;letter-spacing:-.02em;margin-bottom:20px}
-h1 span{color:var(--acc)}
-.lead{font-size:18px;color:var(--mut);margin-bottom:40px;max-width:560px}
-h2{font-size:20px;font-weight:700;margin:40px 0 16px}
-p{color:var(--mut);margin-bottom:14px}
-a.btn{display:inline-block;padding:12px 24px;background:var(--acc);color:#000;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px;margin:6px 6px 6px 0}
-a.btn:hover{background:#00cc6a}
-a.btn-o{background:transparent;border:1px solid var(--brd);color:var(--fg)}
-a.btn-o:hover{border-color:var(--mut);background:var(--bg2)}
-pre{background:var(--bg2);border:1px solid var(--brd);border-radius:8px;padding:16px;overflow-x:auto;font-family:ui-monospace,monospace;font-size:12px;line-height:1.6;margin:16px 0}
-code{font-family:ui-monospace,monospace;background:var(--bg2);padding:2px 6px;border-radius:4px;color:var(--acc);font-size:.9em}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:20px 0}
-.card{background:var(--bg2);border:1px solid var(--brd);border-radius:8px;padding:16px}
-.card strong{display:block;color:var(--acc);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
-.card span{color:var(--mut);font-size:14px}
-ul{list-style:none;margin:16px 0}
-ul li{padding:6px 0;color:var(--mut);font-size:15px}
-ul li:before{content:"✓ ";color:var(--acc);font-weight:700}
-footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--brd);color:var(--mut);font-size:13px;text-align:center}
-footer a{color:var(--acc);text-decoration:none}
+  :root {
+    --bg:        #0a0a0a;
+    --bg-2:      #0d0f0d;
+    --bg-3:      #111411;
+    --line:      #1a2a1a;
+    --line-2:    #243a24;
+    --fg:        #d0d8d0;
+    --fg-2:      #7a887a;
+    --fg-3:      #4a5a4a;
+    --green:     #39ff14;
+    --green-dim: #2a8a1a;
+    --cyan:      #00d9ff;
+    --amber:     #ffb000;
+    --red:       #ff0033;
+    --violet:    #a020f0;
+
+    --mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Menlo, Consolas,
+            'Liberation Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* scanlines */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1000;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 2px,
+      rgba(57, 255, 20, 0.015) 3px,
+      transparent 4px
+    );
+  }
+
+  /* vignette */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    background: radial-gradient(ellipse at center,
+      transparent 40%, rgba(0,0,0,0.6) 100%);
+  }
+
+  a { color: var(--green); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ── HERO ─────────────────────────────────── */
+
+  .hero {
+    padding: 20px 0 40px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .prompt {
+    color: var(--green);
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .prompt .user { color: var(--fg-2); }
+  .prompt .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--green);
+    vertical-align: middle;
+    margin-left: 2px;
+    animation: blink 1.1s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .logo {
+    color: var(--green);
+    font-size: clamp(10px, 2.4vw, 18px);
+    line-height: 1.15;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 24px 0;
+    text-shadow: 0 0 6px rgba(57, 255, 20, 0.4);
+    font-weight: 700;
+  }
+
+  .tagline {
+    color: var(--fg);
+    font-size: 15px;
+    margin: 8px 0;
+  }
+  .tagline.strong { color: var(--green); }
+
+  .tagline-sub {
+    color: var(--fg-2);
+    font-size: 12px;
+    margin-top: 12px;
+  }
+
+  /* ── HUD ──────────────────────────────────── */
+
+  .hud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 24px 0 0;
+    font-size: 11px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    background: var(--bg-3);
+    border: 1px solid var(--line-2);
+    border-radius: 2px;
+    color: var(--fg-2);
+    white-space: nowrap;
+  }
+  .chip .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s infinite;
+  }
+  .chip.live  { color: var(--green); border-color: var(--green-dim); }
+  .chip.warn  { color: var(--amber); border-color: #5a3d00; }
+  .chip.crit  { color: var(--red);   border-color: #5a0011; }
+  .chip .k    { color: var(--violet); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.35; }
+  }
+
+  /* ── SECCIONES ────────────────────────────── */
+
+  section {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sec-head {
+    color: var(--fg-3);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sec-head::before { content: '['; color: var(--green-dim); }
+  .sec-head::after  { content: ']'; color: var(--green-dim); }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--fg);
+    margin-bottom: 20px;
+    line-height: 1.35;
+  }
+  h2 .accent { color: var(--green); }
+
+  p { color: var(--fg-2); margin-bottom: 16px; }
+  p strong { color: var(--fg); font-weight: 500; }
+
+  /* ── TABLA ────────────────────────────────── */
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 12px;
+  }
+  .table th, .table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  .table th {
+    color: var(--fg-3);
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+  }
+  .table td:first-child { color: var(--green); }
+  .table td:last-child  { color: var(--red); }
+
+  /* ── CODE BLOCK ───────────────────────────── */
+
+  .code {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--green-dim);
+    border-radius: 2px;
+    padding: 16px 20px;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 20px 0;
+    color: var(--fg);
+    white-space: pre;
+  }
+  .code .c { color: var(--fg-3); }
+  .code .k { color: var(--violet); }
+  .code .s { color: var(--green); }
+  .code .n { color: var(--amber); }
+  .code .p { color: var(--cyan); }
+
+  /* ── CARDS ────────────────────────────────── */
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: 16px 18px;
+    border-radius: 2px;
+  }
+  .card .k {
+    color: var(--green);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .card .v { color: var(--fg-2); font-size: 12px; }
+
+  /* ── RESPONSE CARD ────────────────────────── */
+
+  .response {
+    background: var(--bg-2);
+    border: 1px solid var(--line-2);
+    border-radius: 2px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    font-size: 12px;
+    line-height: 1.9;
+  }
+  .response .row { display: flex; gap: 16px; }
+  .response .key { color: var(--fg-3); min-width: 110px; }
+  .response .val { color: var(--fg); }
+  .response .ok  { color: var(--green); }
+  .response hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 12px 0;
+  }
+
+  /* ── SELLO ────────────────────────────────── */
+
+  .seal-wrap {
+    text-align: center;
+    padding: 40px 0;
+  }
+
+  .seal {
+    display: inline-block;
+    width: 140px;
+    height: 140px;
+    border: 1px solid var(--green-dim);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: var(--green);
+    animation: slow-rotate 40s linear infinite;
+  }
+  .seal::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px dashed var(--line-2);
+    border-radius: 50%;
+  }
+  .seal .kappa {
+    font-size: 48px;
+    font-weight: 700;
+    text-shadow: 0 0 12px rgba(57, 255, 20, 0.5);
+    animation: slow-rotate 40s linear infinite reverse;
+  }
+  @keyframes slow-rotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .seal-label {
+    color: var(--fg-3);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    margin-top: 20px;
+    text-transform: uppercase;
+  }
+
+  /* ── CTA ──────────────────────────────────── */
+
+  .cta {
+    text-align: center;
+    padding: 60px 0 40px;
+    border-bottom: none;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border: 1px solid var(--green);
+    color: var(--green);
+    background: transparent;
+    font-family: inherit;
+    font-size: 13px;
+    margin: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-radius: 2px;
+    text-decoration: none;
+  }
+  .btn:hover {
+    background: var(--green);
+    color: var(--bg);
+    text-decoration: none;
+    box-shadow: 0 0 24px rgba(57, 255, 20, 0.3);
+  }
+  .btn.ghost {
+    border-color: var(--line-2);
+    color: var(--fg-2);
+  }
+  .btn.ghost:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .final {
+    text-align: center;
+    margin-top: 60px;
+    color: var(--fg-3);
+    font-size: 12px;
+  }
+  .final .k {
+    color: var(--violet);
+    font-size: 24px;
+    display: block;
+    margin: 16px 0 8px;
+    text-shadow: 0 0 12px rgba(160, 32, 240, 0.4);
+  }
+
+  /* ── RESPONSIVE ───────────────────────────── */
+
+  @media (max-width: 600px) {
+    .container { padding: 24px 16px 60px; }
+    .logo      { font-size: 8px; }
+    h2         { font-size: 17px; }
+    .table     { font-size: 11px; }
+    .table th, .table td { padding: 8px 8px; }
+    .hud       { font-size: 10px; }
+  }
+
+  /* ── REDUCED MOTION ───────────────────────── */
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    body::before { display: none; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-<div class="logo">◆ atribución</div>
-<div class="badge">EU AI ACT · AGOSTO 2026</div>
-<h1>Compliance <span>EU AI Act</span> para agentes IA en una línea de código.</h1>
-<p class="lead">Registra cada acción de tus agentes, obtén certificados verificables y cumple con Art. 12, 14 y 22. Sin abogados. Sin infraestructura.</p>
-<a href="https://atribucion-api.onrender.com/docs" class="btn">Ver API en vivo →</a>
-<a href="https://github.com/Marcorojas17/atribucion" class="btn btn-o">GitHub</a>
 
-<h2>El problema</h2>
-<p>Desde agosto de 2026, el EU AI Act obliga a toda empresa que despliegue agentes IA de alto riesgo a registrar cada acción, probar supervisión humana y explicar decisiones automatizadas.</p>
-<p>Multas: hasta <strong style="color:#ff4444">€35M o 7% de facturación global</strong>.</p>
+<div class="container">
 
-<h2>La solución</h2>
-<pre>curl -X POST https://atribucion-api.onrender.com/v1/agents/{id}/actions \
-  -H "Authorization: Bearer $API_KEY" \
-  -d '{"action":"trade_executed","input":{...},"output":{...}}'</pre>
-<div class="grid">
-<div class="card"><strong>01</strong><span>Certificado verificable W3C VC 2.0</span></div>
-<div class="card"><strong>02</strong><span>Anclaje en Ethereum</span></div>
-<div class="card"><strong>03</strong><span>Sello RFC 3161 (DigiCert)</span></div>
-<div class="card"><strong>04</strong><span>Informe mensual para auditores</span></div>
+  <!-- ═══════════════ HERO ═══════════════ -->
+
+  <header class="hero">
+    <div class="prompt">
+      <span class="user">user@atribucion:~$</span> ./atribucion --banner
+      <span class="cursor"></span>
+    </div>
+
+    <pre class="logo" aria-label="Atribución">█████╗ ████████╗██████╗ ██╗██████╗ ██╗   ██╗ ██████╗██╗ ██████╗ ███╗   ██╗
+██╔══██╗╚══██╔══╝██╔══██╗██║██╔══██╗██║   ██║██╔════╝██║██╔═══██╗████╗  ██║
+███████║   ██║   ██████╔╝██║██████╔╝██║   ██║██║     ██║██║   ██║██╔██╗ ██║
+██╔══██║   ██║   ██╔══██╗██║██╔══██╗██║   ██║██║     ██║██║   ██║██║╚██╗██║
+██║  ██║   ██║   ██║  ██║██║██████╔╝╚██████╔╝╚██████╗██║╚██████╔╝██║ ╚████║
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═════╝  ╚═════╝  ╚═════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝</pre>
+
+    <p class="tagline">Compliance EU AI Act para agentes autónomos.</p>
+    <p class="tagline strong">Un endpoint. Una línea de código.</p>
+    <p class="tagline-sub">Registra. Firma. Ancla. Certifica. En 287 ms.</p>
+
+    <div class="hud">
+      <span class="chip live"><span class="dot"></span>LIVE</span>
+      <span class="chip">BUILD ✓ GREEN</span>
+      <span class="chip">TESTS 101/101</span>
+      <span class="chip">LATENCY &lt;300ms</span>
+      <span class="chip warn">ECDSA + ML-DSA</span>
+      <span class="chip crit">DEADLINE 2026-08-02</span>
+      <span class="chip"><span class="k">Κ</span> SEALED</span>
+    </div>
+  </header>
+
+  <!-- ═══════════════ PROBLEMA ═══════════════ -->
+
+  <section id="problema">
+    <div class="sec-head">01 · el reloj ya está corriendo</div>
+
+    <h2>El <span class="accent">2 de agosto de 2026</span> entra en vigor el régimen de alto riesgo del EU AI Act.</h2>
+
+    <p>Toda empresa que despliegue agentes autónomos en la UE tendrá que <strong>probar</strong> —no prometer— tres cosas:</p>
+
+    <table class="table">
+      <thead>
+        <tr><th>Artículo</th><th>Obligación</th><th>Exposición máxima</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Art. 12</td><td>Registro automático e íntegro de eventos</td><td>€35M o 7% facturación</td></tr>
+        <tr><td>Art. 14</td><td>Supervisión humana efectiva y trazable</td><td>€35M o 7% facturación</td></tr>
+        <tr><td>Art. 22</td><td>Explicabilidad per-decisión</td><td>€35M o 7% facturación</td></tr>
+      </tbody>
+    </table>
+
+    <p>El <strong>90% de las empresas europeas</strong> con agentes en producción no puede probar hoy ni uno de los tres.</p>
+
+    <p class="tagline-sub" style="border-left: 2px solid var(--red); padding-left: 16px; margin-top: 24px;">
+      Los logs de CloudWatch no son evidencia.<br>
+      Los dashboards no son certificados.<br>
+      Una captura de pantalla no es un anclaje criptográfico.
+    </p>
+  </section>
+
+  <!-- ═══════════════ SOLUCIÓN ═══════════════ -->
+
+  <section id="solucion">
+    <div class="sec-head">02 · un endpoint</div>
+
+    <h2>Una llamada HTTP. <span class="accent">Evidencia legal verificable.</span></h2>
+
+    <div class="code"><span class="c">$ curl -X POST https://atribucion-api.onrender.com/v1/agents/$ID/actions \</span>
+    <span class="s">-H "Authorization: Bearer $API_KEY"</span> \
+    <span class="s">-H "X-Agent-Signature: 0x..."</span> \
+    <span class="s">-H "X-Agent-Signature-PQC: 0x..."</span> \
+    <span class="s">-H "Content-Type: application/json"</span> \
+    <span class="s">-d</span> <span class="n">'{</span>
+      <span class="k">"action"</span>: <span class="n">"trade_executed"</span>,
+      <span class="k">"input"</span>:  {<span class="k">"symbol"</span>:<span class="n">"AAPL"</span>,<span class="k">"quantity"</span>:<span class="n">100</span>},
+      <span class="k">"output"</span>: {<span class="k">"order_id"</span>:<span class="n">"ord_abc123"</span>,<span class="k">"status"</span>:<span class="n">"filled"</span>},
+      <span class="k">"reasoning"</span>: <span class="n">"Señal alcista confirmada por 3 indicadores."</span>,
+      <span class="k">"autonomy_level"</span>: <span class="n">"semi-autonomo"</span>
+    <span class="n">}'</span></div>
+
+    <p style="margin-top: 24px;">Y en <strong>287 ms</strong> recibes:</p>
+
+    <div class="response">
+      <div class="row"><span class="key">vc</span>         <span class="val">W3C VC 2.0 firmada · el "qué pasó"</span></div>
+      <div class="row"><span class="key">anchor</span>     <span class="val">Merkle root en Ethereum · el "cuándo, sin trampa"</span></div>
+      <div class="row"><span class="key">timestamp</span>  <span class="val">RFC 3161 · eIDAS 2.0 · el "cuándo, con ley"</span></div>
+      <div class="row"><span class="key">report_url</span> <span class="val">PDF mensual listo para auditor · el "y ahora qué"</span></div>
+      <hr>
+      <div class="row"><span class="key">ECDSA</span>    <span class="ok">✓ verified  ·  secp256k1</span></div>
+      <div class="row"><span class="key">ML-DSA</span>   <span class="ok">✓ verified  ·  dilithium-3  (post-cuántico)</span></div>
+    </div>
+
+    <p><strong>Post-cuántico desde el día uno.</strong> La verificación falla si <em>cualquiera</em> de las dos firmas falla. Cuando llegue el Q-day, tu histórico seguirá verificándose.</p>
+  </section>
+
+  <!-- ═══════════════ PARA QUIÉN ═══════════════ -->
+
+  <section id="quien">
+    <div class="sec-head">03 · para quién es esto</div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="k">fintech · trading</div>
+        <div class="v">Art. 22 · explicabilidad per-operación</div>
+      </div>
+      <div class="card">
+        <div class="k">healthtech · triaje</div>
+        <div class="v">Art. 14 · supervisión humana demostrable</div>
+      </div>
+      <div class="card">
+        <div class="k">infra crítica</div>
+        <div class="v">Art. 12 · logs tamper-proof</div>
+      </div>
+      <div class="card">
+        <div class="k">plataformas B2B</div>
+        <div class="v">heredan la obligación de sus clientes</div>
+      </div>
+      <div class="card">
+        <div class="k">legal / compliance</div>
+        <div class="v">un PDF firmado que el auditor acepta</div>
+      </div>
+      <div class="card" style="border-style:dashed; opacity:.6;">
+        <div class="k">████████</div>
+        <div class="v">████████████████████████████</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ API ═══════════════ -->
+
+  <section id="api">
+    <div class="sec-head">04 · api en vivo</div>
+
+    <div class="code"><span class="c"># todos los endpoints públicos</span>
+
+<span class="p">api</span>        https://atribucion-api.onrender.com
+<span class="p">docs</span>       https://atribucion-api.onrender.com/docs
+<span class="p">health</span>     https://atribucion-api.onrender.com/v1/health
+<span class="p">verifier</span>   /verifier/       <span class="c"># verificación pública de credenciales</span>
+<span class="p">github</span>     github.com/Marcorojas17/atribucion</div>
+
+    <p>Sin registro previo. Sin tarjeta. Sin fricción.</p>
+  </section>
+
+  <!-- ═══════════════ SELLO ═══════════════ -->
+
+  <section id="sello">
+    <div class="sec-head">05 · el sello</div>
+
+    <div class="seal-wrap">
+      <div class="seal" role="img" aria-label="Sello de Kronos">
+        <span class="kappa">Κ</span>
+      </div>
+      <div class="seal-label">seal of kronos · 2026 · eth</div>
+    </div>
+
+    <p style="text-align: center; color: var(--fg-3); font-size: 12px; margin-top: 24px;">
+      <em>ὁ χρόνος πάντα νικᾷ</em><br>
+      <span style="color: var(--fg-2);">el tiempo siempre vence</span>
+    </p>
+  </section>
+
+  <!-- ═══════════════ CTA ═══════════════ -->
+
+  <section class="cta">
+    <h2 style="margin-bottom: 32px;">
+      <span class="accent">Atribución no compite</span> con Microsoft, Google, OpenAI ni Anthropic.
+    </h2>
+
+    <p style="color: var(--fg); font-size: 15px; margin-bottom: 40px;">
+      Construye la capa que todas ellas van a tener que adoptar.
+    </p>
+
+    <a href="https://atribucion-api.onrender.com/docs" class="btn">→ leer la documentación</a>
+    <a href="https://github.com/Marcorojas17/atribucion" class="btn ghost">→ github</a>
+    <a href="mailto:marco@atribucion.io" class="btn ghost">→ contacto</a>
+
+    <div class="final">
+      <span class="k">Κ</span>
+      atribucion.io · 2026
+    </div>
+  </section>
+
 </div>
 
-<h2>Estado actual</h2>
-<ul>
-<li>API pública en producción</li>
-<li>101 tests pasando</li>
-<li>CI verde en GitHub Actions</li>
-<li>SDK Python + SDK JavaScript</li>
-<li>9 guardianes autónomos</li>
-<li>Post-cuántico desde el día 1</li>
-</ul>
-
-<h2>Enlaces</h2>
-<p>
-<a href="https://atribucion-api.onrender.com/docs" class="btn">Documentación</a>
-<a href="https://atribucion-api.onrender.com/v1/health" class="btn btn-o">Health</a>
-<a href="https://marcorojas17.github.io/atribucion/verifier/" class="btn btn-o">Verificador</a>
-</p>
-
-<footer>
-Atribución · Marco Antonio Rojas Valdovinos · <a href="https://github.com/Marcorojas17/atribucion">GitHub</a>
-</footer>
-</div>
 </body>
 </html>
