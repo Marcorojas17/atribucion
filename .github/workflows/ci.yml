@@ -29,14 +29,11 @@ jobs:
           pip install cryptography fastapi "uvicorn[standard]" pydantic email-validator pyyaml pytest pytest-asyncio httpx
 
       - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/core/src
         run: |
           pytest tests/ -v --tb=short
-        continue-on-error: true
 
       - name: Sanity check
         run: |
-          python -c "import 
-          fastapi; import 
-          pydantic; import 
-          cryptography; 
-          print('Core OK')"
+          python -c "import fastapi, pydantic, cryptography; print('Core OK')"
