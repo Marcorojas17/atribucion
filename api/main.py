@@ -17,8 +17,6 @@ from api.middleware.rate_limit import rate_limit_middleware
 from api.middleware.security_headers import security_headers_middleware
 from api.routes.actions import router as actions_router
 from api.routes.agents import router as agents_router
-from api.routes.kaf import router as kaf_router
-from api.routes.payments import router as payments_router
 from api.routes.proofs import router as proofs_router
 from api.routes.reports import router as reports_router
 
@@ -63,9 +61,7 @@ async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse
 app.include_router(actions_router)
 app.include_router(agents_router)
 app.include_router(proofs_router)
-app.include_router(payments_router)
 app.include_router(reports_router)
-app.include_router(kaf_router)
 
 
 @app.get("/", tags=["system"])
