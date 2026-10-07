@@ -30,10 +30,10 @@ jobs:
 
       - name: Run tests
         env:
-          PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/core/src
+          PYTHONPATH: ${{ github.workspace }}/core/src:${{ github.workspace }}
         run: |
           pytest tests/ -v --tb=short
 
       - name: Sanity check
         run: |
-          python -c "import fastapi, pydantic, cryptography; print('Core OK')"
+          python -c "import sys; sys.path.insert(0, 'core/src'); import fastapi, pydantic, cryptography; print('Core OK')"
